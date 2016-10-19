@@ -4,7 +4,7 @@ android {
     compileSdkVersion 24
     buildToolsVersion "24.0.3"
     defaultConfig {
-        applicationId "com.example.melchor.boozenoise"
+        applicationId "com.boozenoise.android"
         minSdkVersion 23
         targetSdkVersion 24
         versionCode 1
@@ -26,5 +26,11 @@ dependencies {
     })
     compile 'com.android.support:appcompat-v7:24.2.1'
     compile 'com.android.support:design:24.2.1'
+
+    // Authentification
+    compile 'com.google.firebase:firebase-auth:9.6.1'
     testCompile 'junit:junit:4.12'
 }
+
+// To use FireBase plugin
+apply plugin: 'com.google.gms.google-services'
