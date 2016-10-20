@@ -14,11 +14,11 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
-public class LoginActivity extends AppCompatActivity {
+public class signInActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
     private FirebaseAuth.AuthStateListener authListener;
-    private static final String TAG = LoginActivity.class.getSimpleName();
+    private static final String TAG = signInActivity.class.getSimpleName();
 
     EditText email;
     EditText password;
@@ -83,11 +83,15 @@ public class LoginActivity extends AppCompatActivity {
                     // signed in user can be handled in the listener.
                     if (!task.isSuccessful()) {
                         Log.w(TAG, "signInWithEmail:failed", task.getException());
-                        Toast.makeText(LoginActivity.this, "echec login",
+                        Toast.makeText(signInActivity.this, "echec login",
                                 Toast.LENGTH_SHORT).show();
                     }
                 }
             });
         }
+    }
+
+    public void signUp(View view) {
+
     }
 }
