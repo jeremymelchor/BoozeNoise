@@ -60,7 +60,6 @@ public class signUpActivity extends AppCompatActivity {
                 // User is signed out
                 Log.d(TAG, "onAuthStateChanged:signed_out");
             }
-            // ...
         };
     }
 
