@@ -2,7 +2,6 @@ package com.example.melchor.boozenoise;
 
 import android.content.Intent;
 import android.os.Bundle;
-import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -54,18 +53,14 @@ public class signInActivity extends AppCompatActivity {
 
         auth = FirebaseAuth.getInstance();
 
-        authListener = new FirebaseAuth.AuthStateListener() {
-
-            @Override
-            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
-                FirebaseUser user = firebaseAuth.getCurrentUser();
-                if (user != null) {
-                    // User is signed in
-                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-                } else {
-                    // User is signed out
-                    Log.d(TAG, "onAuthStateChanged:signed_out");
-                }
+        authListener = firebaseAuth -> {
+            FirebaseUser user = firebaseAuth.getCurrentUser();
+            if (user != null) {
+                // User is signed in
+                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+            } else {
+                // User is signed out
+                Log.d(TAG, "onAuthStateChanged:signed_out");
             }
         };
     }
@@ -92,12 +87,13 @@ public class signInActivity extends AppCompatActivity {
             Toast.makeText(this, "You did not enter an email", Toast.LENGTH_SHORT).show();
         else if (TextUtils.isEmpty(password))
             Toast.makeText(this, "You did not enter a password", Toast.LENGTH_SHORT).show();
-        else if (password.length() < PASSWORD_MIN_LENGTH) {
+        else if (password.length() >= PASSWORD_MIN_LENGTH) {
             auth.signInWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
                 Log.d(TAG, "signInWithEmail:onComplete:" + task.isSuccessful());
 
-                if (task.isSuccessful())
+                if (task.isSuccessful()) {
                     startActivity(new Intent(this,MainActivity.class));
+                }
 
                 // If sign in fails, display a message to the user. If sign in succeeds
                 // the auth state listener will be notified and logic to handle the
