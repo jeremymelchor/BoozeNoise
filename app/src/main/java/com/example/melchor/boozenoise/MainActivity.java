@@ -1,6 +1,8 @@
 package com.example.melchor.boozenoise;
 
 import android.content.pm.PackageManager;
+import android.media.AudioFormat;
+import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Environment;
 import android.support.v4.app.ActivityCompat;
@@ -15,10 +17,15 @@ import java.io.IOException;
 
 public class MainActivity extends AppCompatActivity {
 
-    private static final String TAG = signInActivity.class.getSimpleName();
+    private static final String TAG = MainActivity.class.getSimpleName();
 
-    MediaRecorder mediaRecorder;
-    String fileName;
+
+    private AudioRecord audioRecord;
+    private int bufferSize;
+    private double lastLevel;
+    private Thread thread;
+    private final int SAMPLE_DELAY = 2000;
+    private final int SAMPLE_RATE = 8000;
 
 
     @Override
@@ -28,35 +35,63 @@ public class MainActivity extends AppCompatActivity {
 
         // Set Permissions
         if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
-            String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO, Manifest.permission.WRITE_EXTERNAL_STORAGE};
+            String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
             ActivityCompat.requestPermissions(this, permissions, PackageManager.PERMISSION_GRANTED);
         }
-    }
-
-    public void recordSound(View view) {
-        mediaRecorder = new MediaRecorder();
-        mediaRecorder.setAudioSource(MediaRecorder.AudioSource.MIC);
-        mediaRecorder.setOutputFormat(MediaRecorder.OutputFormat.THREE_GPP);
-        fileName = Environment.getExternalStorageDirectory().getAbsolutePath();
-        fileName += "/audiorecordtest.3gp";
-        Log.d(TAG,fileName);
-        mediaRecorder.setOutputFile(fileName);
-        mediaRecorder.setAudioEncoder(MediaRecorder.AudioEncoder.AMR_NB);
 
         try {
-            mediaRecorder.prepare();
-        } catch (IOException e) {
-            Log.e(TAG, "prepare() failed");
+            bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
+            audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
+        } catch (Exception e) {
+            Log.e("TrackingFlow", "Exception", e);
         }
 
-        float percentOfASecond = (float) 2000 / 1000.0f;
-        int numSamplesRequired = (int) ((float) sampleRate * percentOfASecond);
-        int bufferSize =
-                determineCalculatedBufferSize(sampleRate, encoding,
-                        numSamplesRequired);
+    }
 
-        return doRecording(sampleRate, encoding, bufferSize,
-                numSamplesRequired, DEFAULT_BUFFER_INCREASE_FACTOR);
-        mediaRecorder.start();
+    public void recordSound(View view) throws IOException {
+        audioRecord.startRecording();
+
+        thread = new Thread(() -> {
+            while ((thread != null) && !thread.isInterrupted()) {
+                //Let's make the thread sleep for a the approximate sampling time
+                try {
+                    Thread.sleep(SAMPLE_DELAY);
+                } catch (InterruptedException ie) {
+                    ie.printStackTrace();
+                }
+                readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+
+                runOnUiThread(() -> {
+                    Log.d(TAG,"DB : " + lastLevel);
+                });
+            }
+        });
+        thread.start();
+    }
+
+    /**
+     * Functionality that gets the sound level out of the sample
+     */
+    private void readAudioBuffer() {
+
+        try {
+            short[] buffer = new short[bufferSize];
+            int bufferReadResult;
+
+            if (audioRecord != null) {
+
+                bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
+                /*for (int i=0; i<buffer.length; i++)
+                    Log.d(TAG,"buffer["+i+"] : " + buffer[i]);*/
+                double sumLevel = 0;
+                for (int i = 0; i < bufferReadResult; i++) {
+                    if (buffer[i] != 0)
+                        sumLevel += 20*Math.log10(((double) Math.abs(buffer[i]))/65535.0);
+                }
+                lastLevel = Math.abs((sumLevel / bufferReadResult));
+            }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 }
