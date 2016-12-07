@@ -17,13 +17,4 @@
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:onClick="recordSound"/>
-
-        <Button
-            android:id="@+id/end"
-            android:text="Stop Recording"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:onClick="stopRecording"
-            android:layout_centerHorizontal="true"
-            android:layout_below="@+id/record" />
 </RelativeLayout>

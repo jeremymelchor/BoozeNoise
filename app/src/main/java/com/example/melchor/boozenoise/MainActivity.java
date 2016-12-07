@@ -48,24 +48,37 @@ public class MainActivity extends AppCompatActivity {
 
     }
 
+    /**
+     * See http://www.doepiccoding.com/blog/?p=195
+     * @param view
+     * @throws IOException
+     */
     public void recordSound(View view) throws IOException {
         audioRecord.startRecording();
 
-        thread = new Thread(() -> {
-            while ((thread != null) && !thread.isInterrupted()) {
-                //Let's make the thread sleep for a the approximate sampling time
-                try {
-                    Thread.sleep(SAMPLE_DELAY);
-                } catch (InterruptedException ie) {
-                    ie.printStackTrace();
-                }
-                readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+        thread = new Thread(new Runnable() {
 
-                runOnUiThread(() -> {
-                    Log.d(TAG,"DB : " + lastLevel);
-                });
+            @Override
+            public void run() {
+                while ((thread != null) && !thread.isInterrupted()) {
+                    //Let's make the thread sleep for a the approximate sampling time
+                    try {
+                        Thread.sleep(SAMPLE_DELAY);
+                    } catch (InterruptedException ie) {
+                        ie.printStackTrace();
+                    }
+                    readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+
+                    runOnUiThread(new Runnable() {
+                        @Override
+                        public void run() {
+                            Log.d(TAG, "DB : " + lastLevel);
+                        }
+                    });
+                }
             }
         });
+
         thread.start();
     }
 

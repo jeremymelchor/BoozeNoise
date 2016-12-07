@@ -1,6 +1,7 @@
 package com.example.melchor.boozenoise;
 
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.v7.app.AppCompatActivity;
 import android.text.Editable;
 import android.text.TextUtils;
@@ -10,6 +11,9 @@ import android.view.View;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.google.android.gms.tasks.OnCompleteListener;
+import com.google.android.gms.tasks.Task;
+import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
@@ -51,17 +55,22 @@ public class signUpActivity extends AppCompatActivity {
         });
 
         auth = FirebaseAuth.getInstance();
-        authListener = (firebaseAuth) -> {
-            FirebaseUser user = firebaseAuth.getCurrentUser();
-            if (user != null) {
-                // User is signed in
-                Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
-            } else {
-                // User is signed out
-                Log.d(TAG, "onAuthStateChanged:signed_out");
+        authListener = new FirebaseAuth.AuthStateListener() {
+
+            @Override
+            public void onAuthStateChanged(@NonNull FirebaseAuth firebaseAuth) {
+                FirebaseUser user = firebaseAuth.getCurrentUser();
+                if (user != null) {
+                    // User is signed in
+                    Log.d(TAG, "onAuthStateChanged:signed_in:" + user.getUid());
+                } else {
+                    // User is signed out
+                    Log.d(TAG, "onAuthStateChanged:signed_out");
+                }
             }
         };
     }
+
 
     @Override
     public void onStart() {
@@ -86,15 +95,19 @@ public class signUpActivity extends AppCompatActivity {
         else if (TextUtils.isEmpty(password))
             Toast.makeText(this, "You did not enter a password", Toast.LENGTH_SHORT).show();
         else if (password.length() < PASSWORD_MIN_LENGTH) {
-            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(task -> {
-                Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+            auth.createUserWithEmailAndPassword(email, password).addOnCompleteListener(this, new OnCompleteListener<AuthResult>() {
 
-                // If sign in fails, display a message to the user. If sign in succeeds
-                // the auth state listener will be notified and logic to handle the
-                // signed in user can be handled in the listener.
-                if (!task.isSuccessful()) {
-                    Toast.makeText(signUpActivity.this, "echec inscription",
-                            Toast.LENGTH_SHORT).show();
+                @Override
+                public void onComplete(@NonNull Task<AuthResult> task) {
+                    Log.d(TAG, "createUserWithEmail:onComplete:" + task.isSuccessful());
+
+                    // If sign in fails, display a message to the user. If sign in succeeds
+                    // the auth state listener will be notified and logic to handle the
+                    // signed in user can be handled in the listener.
+                    if (!task.isSuccessful()) {
+                        Toast.makeText(signUpActivity.this, "echec inscription",
+                                Toast.LENGTH_SHORT).show();
+                    }
                 }
             });
         }
