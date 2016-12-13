@@ -1,17 +1,19 @@
 package com.example.melchor.boozenoise;
 
+import android.Manifest;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
-import android.os.Environment;
+import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AppCompatActivity;
-import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
-import android.Manifest;
+
+import com.google.firebase.database.DatabaseReference;
+import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 
@@ -22,10 +24,10 @@ public class MainActivity extends AppCompatActivity {
 
     private AudioRecord audioRecord;
     private int bufferSize;
-    private double lastLevel;
     private Thread thread;
     private final int SAMPLE_DELAY = 2000;
     private final int SAMPLE_RATE = 8000;
+    private final int AUDIO_SAMPLES = 10;
 
 
     @Override
@@ -50,6 +52,7 @@ public class MainActivity extends AppCompatActivity {
 
     /**
      * See http://www.doepiccoding.com/blog/?p=195
+     *
      * @param view
      * @throws IOException
      */
@@ -60,6 +63,7 @@ public class MainActivity extends AppCompatActivity {
 
             @Override
             public void run() {
+                double averageDB = 0, nbSamples = 0;
                 while ((thread != null) && !thread.isInterrupted()) {
                     //Let's make the thread sleep for a the approximate sampling time
                     try {
@@ -67,14 +71,20 @@ public class MainActivity extends AppCompatActivity {
                     } catch (InterruptedException ie) {
                         ie.printStackTrace();
                     }
-                    readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+                    averageDB += readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
+                    if (++nbSamples == AUDIO_SAMPLES) thread.interrupt();
 
-                    runOnUiThread(new Runnable() {
+                    //todo: mettre dans la DB
+                    FirebaseDatabase database = FirebaseDatabase.getInstance();
+                    DatabaseReference myRef = database.getReference("message");
+                    myRef.setValue("Hello, World!");
+
+                    /*runOnUiThread(new Runnable() {
                         @Override
                         public void run() {
-                            Log.d(TAG, "DB : " + lastLevel);
+                            Log.d(TAG, "DB : " + mediumDB);
                         }
-                    });
+                    });*/
                 }
             }
         });
@@ -85,7 +95,8 @@ public class MainActivity extends AppCompatActivity {
     /**
      * Functionality that gets the sound level out of the sample
      */
-    private void readAudioBuffer() {
+    private double readAudioBuffer() {
+        double lastLevel = 0;
 
         try {
             short[] buffer = new short[bufferSize];
@@ -94,17 +105,15 @@ public class MainActivity extends AppCompatActivity {
             if (audioRecord != null) {
 
                 bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
-                /*for (int i=0; i<buffer.length; i++)
-                    Log.d(TAG,"buffer["+i+"] : " + buffer[i]);*/
                 double sumLevel = 0;
                 for (int i = 0; i < bufferReadResult; i++) {
                     if (buffer[i] != 0)
-                        sumLevel += 20*Math.log10(((double) Math.abs(buffer[i]))/65535.0);
+                        sumLevel += 20 * Math.log10(((double) Math.abs(buffer[i])) / 65535.0);
                 }
                 lastLevel = Math.abs((sumLevel / bufferReadResult));
             }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
+        } catch (Exception e) { e.printStackTrace(); }
+
+        return lastLevel;
     }
 }
