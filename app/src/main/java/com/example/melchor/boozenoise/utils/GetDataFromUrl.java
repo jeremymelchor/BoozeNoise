@@ -1,12 +1,12 @@
-package com.example.melchor.boozenoise;
+package com.example.melchor.boozenoise.utils;
 
 import android.os.AsyncTask;
 import android.util.Log;
 
-import java.lang.reflect.Array;
-import java.util.ArrayList;
-
-import static android.provider.ContactsContract.CommonDataKinds.Website.URL;
+import com.example.melchor.boozenoise.entity.ListBar;
+import com.google.android.gms.maps.GoogleMap;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
 
 public class GetDataFromUrl extends AsyncTask<Void,Void,Void> {
 
@@ -14,12 +14,14 @@ public class GetDataFromUrl extends AsyncTask<Void,Void,Void> {
     private final String KEY = "AIzaSyBKlwR3R7oovTzIh7xepPRrbIO6n-da6jQ";
     private double latitude,longitude;
     private double radius_in_meters;
+    private GoogleMap googleMap;
 
-    public GetDataFromUrl(double latitude, double longitude, int radius_in_meters) {
+    public GetDataFromUrl(double latitude, double longitude, int radius_in_meters, GoogleMap googleMap) {
         super();
         this.latitude = latitude;
         this.longitude = longitude;
         this.radius_in_meters = radius_in_meters;
+        this.googleMap = googleMap;
     }
 
     @Override
@@ -39,7 +41,15 @@ public class GetDataFromUrl extends AsyncTask<Void,Void,Void> {
         String jsonStr = httpHandler.makeServiceCall(url);
 
         Log.e(TAG, "Response from url: " + jsonStr);
+
+        Gson gson = new GsonBuilder().create();
+        ListBar listBar = gson.fromJson(jsonStr, ListBar.class);
+        Log.d(TAG, listBar.toString());
+
         return null;
+    }
+
+    protected void onPostExecute(Void voids) {
 
     }
 }

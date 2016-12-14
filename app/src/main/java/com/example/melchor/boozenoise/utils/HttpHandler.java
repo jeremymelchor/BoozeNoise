@@ -1,4 +1,4 @@
-package com.example.melchor.boozenoise;
+package com.example.melchor.boozenoise.utils;
 
 import android.util.Log;
 
