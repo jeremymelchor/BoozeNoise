@@ -3,12 +3,15 @@ package com.example.melchor.boozenoise.utils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.melchor.boozenoise.entity.ListBar;
+import com.example.melchor.boozenoise.entity.Bar;
+import com.example.melchor.boozenoise.entity.ListBars;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GetDataFromUrl extends AsyncTask<Void,Void,Void> {
+import java.util.ArrayList;
+
+public class GetDataFromUrl extends AsyncTask<Void,Void,ListBars> {
 
     private static final String TAG = GetDataFromUrl.class.getSimpleName();
     private final String KEY = "AIzaSyBKlwR3R7oovTzIh7xepPRrbIO6n-da6jQ";
@@ -25,14 +28,13 @@ public class GetDataFromUrl extends AsyncTask<Void,Void,Void> {
     }
 
     @Override
-    protected Void doInBackground(Void... voids) {
+    protected ListBars doInBackground(Void... voids) {
         HttpHandler httpHandler = new HttpHandler();
 
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
                 +"location="+latitude+','+longitude
                 +"&radius="+radius_in_meters
                 +"&type=bar"
-                +"&opennow"
                 +"&key="+KEY;
 
         Log.d(TAG,"URL : "+url);
@@ -43,13 +45,15 @@ public class GetDataFromUrl extends AsyncTask<Void,Void,Void> {
         Log.e(TAG, "Response from url: " + jsonStr);
 
         Gson gson = new GsonBuilder().create();
-        ListBar listBar = gson.fromJson(jsonStr, ListBar.class);
-        Log.d(TAG, listBar.toString());
+        ListBars listBars = gson.fromJson(jsonStr, ListBars.class);
 
-        return null;
+        return listBars;
     }
 
-    protected void onPostExecute(Void voids) {
-
+    protected void onPostExecute(ListBars listBars) {
+        Log.d(TAG,"WRITING TO DB..");
+        // Persist bars found
+        DatabaseManager databaseManager = new DatabaseManager("write",listBars);
+        databaseManager.execute();
     }
 }

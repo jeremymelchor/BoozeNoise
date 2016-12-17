@@ -10,6 +10,7 @@ android {
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
+        multiDexEnabled true
     }
     buildTypes {
         release {
@@ -30,13 +31,13 @@ dependencies {
     })
 
     // Authentification
+    compile 'com.google.firebase:firebase-auth:10.0.1'
+
     // Realtime database
-    
+    compile 'com.google.firebase:firebase-database:10.0.1'
 
     compile 'com.android.support:appcompat-v7:23.4.0'
     compile 'com.android.support:design:23.4.0'
-    compile 'com.google.firebase:firebase-auth:10.0.1'
-    compile 'com.google.firebase:firebase-database:10.0.1'
     compile 'com.google.android.gms:play-services:10.0.1'
 
     // JSON parsing library
