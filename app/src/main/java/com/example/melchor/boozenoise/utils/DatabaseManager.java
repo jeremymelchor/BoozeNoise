@@ -13,6 +13,9 @@ import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
 import com.google.firebase.database.ValueEventListener;
 
+import java.util.HashMap;
+import java.util.Map;
+
 public class DatabaseManager extends AsyncTask<String, Void, Void> {
 
     private static final String TAG = DatabaseManager.class.getSimpleName();
@@ -81,7 +84,16 @@ public class DatabaseManager extends AsyncTask<String, Void, Void> {
                 }
             });
         }*/
-        databaseReference.setValue(listBars.getResultsFromWebservice());
+
+        for (Bar bar : listBars.getResultsFromWebservice()) {
+            Map<String, Object> updates = new HashMap<>();
+            updates.put(bar.getPlace_id(), bar);
+            databaseReference.updateChildren(updates);
+        }
+
+        //databaseReference.child(push().setValue(listBars.getResultsFromWebservice());
+
+        //databaseReference.setValue(listBars.getResultsFromWebservice());
     }
 
     private void findByPlaceId(String place_id) {

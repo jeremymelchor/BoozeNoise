@@ -60,11 +60,11 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        latitude = myLocation.getLatitude();
-        longitude = myLocation.getLongitude();
+        latitude = 43.696460;//myLocation.getLatitude();
+        longitude = 7.274179;//myLocation.getLongitude();
 
         // Move camera to current position
-        LatLng latLng = new LatLng(latitude, longitude);
+        LatLng latLng = new LatLng(latitude,longitude);
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
