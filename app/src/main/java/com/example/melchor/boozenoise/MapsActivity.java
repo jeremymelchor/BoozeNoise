@@ -1,14 +1,21 @@
 package com.example.melchor.boozenoise;
 
 import android.Manifest;
+import android.app.ActivityOptions;
+import android.app.FragmentManager;
+import android.app.FragmentTransaction;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.Snackbar;
 import android.support.v4.app.ActivityCompat;
 import android.support.v7.app.AppCompatActivity;
+import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.example.melchor.boozenoise.utils.GetDataFromUrl;
 import com.google.android.gms.maps.CameraUpdateFactory;
@@ -16,8 +23,11 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.SupportMapFragment;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnMenuTabSelectedListener;
 
-public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback {
+public class MapsActivity extends AppCompatActivity implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
 
     private final String TAG = this.getClass().getSimpleName();
     private double latitude, longitude;
@@ -34,8 +44,43 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         setContentView(R.layout.activity_maps);
 
         // Add google maps fragment
-        SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
-        mapFragment.getMapAsync(this);
+        //SupportMapFragment mapFragment = (SupportMapFragment) getSupportFragmentManager().findFragmentById(R.id.map);
+        //mapFragment.getMapAsync(this);
+
+        FragmentManager fragmentManager = getFragmentManager();
+        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+
+        MapsFragment fragment = new MapsFragment();
+        fragmentTransaction.add(R.id.fragment_container, fragment);
+        fragmentTransaction.commit();
+
+
+
+
+
+        BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
+        bottomBar.setItemsFromMenu(R.menu.bottom_bar_navigation, new OnMenuTabSelectedListener() {
+            @Override
+            public void onMenuItemSelected(int itemId) {
+                switch (itemId) {
+                    case R.id.profile_item:
+                        Log.d(TAG,"itemID : " + itemId);
+                        break;
+                    case R.id.map_item:
+                        Log.d(TAG,"itemID : " + itemId);
+                        break;
+                    case R.id.record_item:
+                        FragmentManager fragmentManager = getFragmentManager();
+                        FragmentTransaction fragmentTransaction = fragmentManager.beginTransaction();
+                        UserProfileFragment fragment = new UserProfileFragment();
+                        fragmentTransaction.replace(R.id.fragment_container,fragment);
+                        fragmentTransaction.commit();
+                        break;
+                }
+            }
+        });
+        // Set the color for the active tab. Ignored on mobile when there are more than three tabs.
+        bottomBar.setActiveTabColor("#C2185B");
     }
 
     @Override
@@ -68,6 +113,15 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
         googleMap.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         googleMap.animateCamera(CameraUpdateFactory.zoomTo(15));
 
+        // Set listener on marker clicks
+        googleMap.setOnMarkerClickListener(this);
+
+    }
+
+    @Override
+    public boolean onMarkerClick(Marker marker) {
+        Log.d(TAG,marker.getTitle());
+        return true;
     }
 
     /**************************************/
@@ -77,5 +131,4 @@ public class MapsActivity extends AppCompatActivity implements OnMapReadyCallbac
     public void getBarsNearMe(View view) {
         new GetDataFromUrl(latitude,longitude,RADIUS_IN_METERS,googleMap).execute();
     }
-
 }

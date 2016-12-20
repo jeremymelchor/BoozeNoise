@@ -6,6 +6,8 @@ import android.util.Log;
 import com.example.melchor.boozenoise.entity.Bar;
 import com.example.melchor.boozenoise.entity.ListBars;
 import com.google.android.gms.maps.GoogleMap;
+import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
@@ -55,5 +57,14 @@ public class GetDataFromUrl extends AsyncTask<Void,Void,ListBars> {
         // Persist bars found
         DatabaseManager databaseManager = new DatabaseManager("write",listBars);
         databaseManager.execute();
+
+        // Update map
+        for (Bar bar : listBars.getResultsFromWebservice()) {
+            double latitude = bar.getGeometry().getLocation().getLatitude();
+            double longitude = bar.getGeometry().getLocation().getLongitude();
+            LatLng latLng = new LatLng(latitude,longitude);
+
+            googleMap.addMarker(new MarkerOptions().position(latLng).title(bar.getName()));
+        }
     }
 }
