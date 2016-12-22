@@ -12,22 +12,18 @@ import com.roughike.bottombar.OnMenuTabSelectedListener;
 public class MapsActivity extends AppCompatActivity {
 
     private static final String TAG = MapsActivity.class.getSimpleName();
-    MapsFragment mapsFragment;
-    UserProfileFragment userProfileFragment;
+    private final MapsFragment mapsFragment = new MapsFragment();
+    private final UserProfileFragment userProfileFragment = new UserProfileFragment();
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_maps);
 
-        mapsFragment = new MapsFragment();
-        userProfileFragment = new UserProfileFragment();
-        //setFragment(mapsFragment);
-
-
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.fragment_container,mapsFragment);
-        fragmentTransaction.addToBackStack(null);
+        fragmentTransaction.add(R.id.fragment_container,userProfileFragment);
+        fragmentTransaction.hide(userProfileFragment);
         fragmentTransaction.commit();
 
         BottomBar bottomBar = BottomBar.attach(this, savedInstanceState);
@@ -39,12 +35,7 @@ public class MapsActivity extends AppCompatActivity {
                         //setFragment();
                         break;
                     case R.id.map_item:
-                        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-                        fragmentTransaction.hide(userProfileFragment);
-                        //fragmentTransaction.show(mapsFragment);
-                        fragmentTransaction.add(R.id.fragment_container,mapsFragment);
-                        fragmentTransaction.addToBackStack(null);
-                        fragmentTransaction.commit();
+                        setFragment(mapsFragment);
                         break;
                     case R.id.record_item:
                         setFragment(userProfileFragment);
@@ -66,20 +57,17 @@ public class MapsActivity extends AppCompatActivity {
     /**************************************/
 
     /**
-     * Set a fragment in the fragment_container
-     *
-     * @param fragment the fragment we want to display
+     * Change display of fragment
+     * @param fragment_to_show
      */
-    public void setFragment(Fragment fragment) {
+    public void setFragment(Fragment fragment_to_show) {
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.replace(R.id.fragment_container, fragment);
-        fragmentTransaction.addToBackStack(null);
-        fragmentTransaction.commit();
-    }
 
-    public void setMapFragment(Fragment fragment) {
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
-        fragmentTransaction.show(fragment);
+        if (fragment_to_show == mapsFragment)
+            fragmentTransaction.hide(userProfileFragment);
+        else fragmentTransaction.hide(mapsFragment);
+
+        fragmentTransaction.show(fragment_to_show);
         fragmentTransaction.commit();
     }
 

@@ -1,9 +1,7 @@
 package com.example.melchor.boozenoise;
 
 
-import android.app.Activity;
 import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -14,13 +12,11 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
 
 import com.example.melchor.boozenoise.utils.GetDataFromUrl;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
-import com.google.android.gms.maps.MapsInitializer;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
@@ -45,7 +41,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         // Gets the MapView from the XML layout and creates it
-        mapView = (MapView) view.findViewById(R.id.fragment_maps);
+        mapView = (MapView) view.findViewById(R.id.maps);
         mapView.onCreate(savedInstanceState);
 
         // Gets the Map
@@ -90,12 +86,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         latitude = 43.696460;//myLocation.getLatitude();
         longitude = 7.274179;//myLocation.getLongitude();
-        Log.d(TAG,"LATITUDE : 43.696460 == "+ latitude);
-        Log.d(TAG,"LONGITUDE : 7.274179 == "+ longitude);
 
         // Move camera to current position
         LatLng latLng = new LatLng(latitude, longitude);
-        Log.d(TAG,"LATLNG : "+latLng);
         map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
         map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
