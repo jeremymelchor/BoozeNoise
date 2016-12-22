@@ -33,10 +33,15 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private double latitude, longitude;
     private int RADIUS_IN_METERS = 1000;
 
+    private BottomSheetBehavior bottomSheetBehavior;
+
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
+
+        View bottomSheet = getActivity().findViewById(R.id.fragment_bottom_sheet);
+        bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.fragment_bottom_sheet));
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
@@ -45,11 +50,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         // Gets the Map
         mapView.getMapAsync(this);
 
-        /*view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
+        view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 new GetDataFromUrl(latitude, longitude, RADIUS_IN_METERS, map).execute();
             }
-        });*/
+        });
 
         return view;
     }
@@ -96,6 +101,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public boolean onMarkerClick(Marker marker) {
+        bottomSheetBehavior.setPeekHeight(300);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
         Log.d(TAG, marker.getTitle());
         return false;
     }

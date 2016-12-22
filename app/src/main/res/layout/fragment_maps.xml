@@ -1,35 +1,44 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:id="@+id/fragment_maps">
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:id="@+id/fragment_maps"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:fitsSystemWindows="true">
 
-    <!--<Button
-        android:id="@+id/getBars"
-        android:text="get Bars"
-        android:layout_width="71dp"
-        android:layout_height="wrap_content"
-        android:layout_marginTop="45dp" />-->
-
-    <com.google.android.gms.maps.MapView
-        android:id="@+id/maps"
-        android:layout_width="fill_parent"
-        android:layout_height="match_parent" />
-
-    <RelativeLayout
-        android:id="@+id/layout_bottom_sheet"
+    <LinearLayout
         android:layout_width="match_parent"
-        android:layout_height="220dp">
+        android:layout_height="match_parent"
+        android:orientation="vertical">
 
         <Button
-            android:text="CLICK ME"
-            android:layout_width="match_parent"
+            android:id="@+id/getBars"
+            android:text="get Bars"
+            android:layout_width="71dp"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_marginLeft="@dimen/activity_vertical_margin"
-            android:layout_marginRight="@dimen/activity_vertical_margin"
-            android:layout_marginTop="@dimen/activity_vertical_margin" />
+            android:layout_marginTop="45dp" />
 
-    </RelativeLayout>
+        <com.google.android.gms.maps.MapView
+            android:id="@+id/maps"
+            android:layout_width="fill_parent"
+            android:layout_height="match_parent" />
 
-</LinearLayout>
+    </LinearLayout>
+
+    <android.support.v4.widget.NestedScrollView
+        android:id="@+id/fragment_bottom_sheet"
+        android:layout_width="match_parent"
+        android:layout_height="350dp"
+        android:background="@android:color/holo_orange_light"
+        android:clipToPadding="true"
+        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
+
+        <TextView
+            android:layout_width="match_parent"
+            android:layout_height="match_parent"
+            android:padding="16dp"
+            android:text="BLABLABLA"
+            android:textSize="16sp" />
+
+    </android.support.v4.widget.NestedScrollView>
+
+</android.support.design.widget.CoordinatorLayout>
