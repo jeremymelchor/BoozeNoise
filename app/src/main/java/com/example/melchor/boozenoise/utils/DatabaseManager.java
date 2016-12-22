@@ -1,17 +1,13 @@
 package com.example.melchor.boozenoise.utils;
 
 import android.os.AsyncTask;
-import android.util.Log;
 
-import com.example.melchor.boozenoise.entity.Bar;
-import com.example.melchor.boozenoise.entity.ListBars;
+import com.example.melchor.boozenoise.entities.Bar;
+import com.example.melchor.boozenoise.entities.ListBars;
 import com.google.firebase.database.ChildEventListener;
-import com.google.firebase.database.DataSnapshot;
-import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 import com.google.firebase.database.Query;
-import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;

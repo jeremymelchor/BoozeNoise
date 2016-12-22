@@ -1,4 +1,4 @@
-package com.example.melchor.boozenoise;
+package com.example.melchor.boozenoise.fragments;
 
 
 import android.app.Fragment;
@@ -7,12 +7,14 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.design.widget.BottomSheetBehavior;
 import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.utils.GetDataFromUrl;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
@@ -31,12 +33,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     private double latitude, longitude;
     private int RADIUS_IN_METERS = 1000;
 
-
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
-        /*super.onSaveInstanceState(savedInstanceState);
-        latitude = savedInstanceState.getDouble("latitude");
-        longitude = savedInstanceState.getDouble("longitude");*/
 
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
@@ -47,11 +45,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         // Gets the Map
         mapView.getMapAsync(this);
 
-        view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
+        /*view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
                 new GetDataFromUrl(latitude, longitude, RADIUS_IN_METERS, map).execute();
             }
-        });
+        });*/
 
         return view;
     }
@@ -94,13 +92,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         // Set listener on marker clicks
         map.setOnMarkerClickListener(this);
-    }
-
-    @Override
-    public void onSaveInstanceState(Bundle outState) {
-        super.onSaveInstanceState(outState);
-        outState.putDouble("latitude", latitude);
-        outState.putDouble("longitude", longitude);
     }
 
     @Override

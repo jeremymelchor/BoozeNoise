@@ -3,15 +3,13 @@ package com.example.melchor.boozenoise.utils;
 import android.os.AsyncTask;
 import android.util.Log;
 
-import com.example.melchor.boozenoise.entity.Bar;
-import com.example.melchor.boozenoise.entity.ListBars;
+import com.example.melchor.boozenoise.entities.Bar;
+import com.example.melchor.boozenoise.entities.ListBars;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
-
-import java.util.ArrayList;
 
 public class GetDataFromUrl extends AsyncTask<Void,Void,ListBars> {
 

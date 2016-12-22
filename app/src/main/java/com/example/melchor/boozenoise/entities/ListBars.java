@@ -1,4 +1,4 @@
-package com.example.melchor.boozenoise.entity;
+package com.example.melchor.boozenoise.entities;
 
 import com.google.gson.annotations.SerializedName;
 

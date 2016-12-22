@@ -1,6 +1,6 @@
-package com.example.melchor.boozenoise;
+package com.example.melchor.boozenoise.fragments;
 
-import android.Manifest;
+import android.app.Fragment;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
@@ -8,16 +8,19 @@ import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
-import android.support.v7.app.AppCompatActivity;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 
+import com.example.melchor.boozenoise.R;
+import com.example.melchor.boozenoise.activities.MainActivity;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
 
 import java.io.IOException;
 
-public class MainActivity extends AppCompatActivity {
+public class SoundRecordFragment extends Fragment {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -31,15 +34,9 @@ public class MainActivity extends AppCompatActivity {
 
 
     @Override
-    protected void onCreate(Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        setContentView(R.layout.activity_main);
+    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
-        // Set Permissions
-        if (ContextCompat.checkSelfPermission(this, Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
-            String[] permissions = new String[]{Manifest.permission.RECORD_AUDIO};
-            ActivityCompat.requestPermissions(this, permissions, PackageManager.PERMISSION_GRANTED);
-        }
+        View view = inflater.inflate(com.example.melchor.boozenoise.R.layout.fragment_sound_record, container, false);
 
         try {
             bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -48,7 +45,43 @@ public class MainActivity extends AppCompatActivity {
             Log.e("TrackingFlow", "Exception", e);
         }
 
+        /** Set view listeners **/
+        view.findViewById(R.id.record).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View v) {
+                try {
+                    recordSound(v);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            }
+        });
+
+        return view;
     }
+
+    /**************************************/
+    /**              EVENTS              **/
+    /**************************************/
+
+    /**
+     * Called when the fragment is visible on screen
+     * @param hidden false = fragment visible
+     */
+    @Override
+    public void onHiddenChanged(boolean hidden) {
+        if (!hidden) {
+            // Set Permissions
+            if (ContextCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.RECORD_AUDIO) == PackageManager.PERMISSION_DENIED) {
+                String[] permissions = new String[]{android.Manifest.permission.RECORD_AUDIO};
+                ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
+            }
+        }
+    }
+
+
+    /**************************************/
+    /**            FUNCTIONS             **/
+    /**************************************/
 
     /**
      * See http://www.doepiccoding.com/blog/?p=195
@@ -112,7 +145,9 @@ public class MainActivity extends AppCompatActivity {
                 }
                 lastLevel = Math.abs((sumLevel / bufferReadResult));
             }
-        } catch (Exception e) { e.printStackTrace(); }
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
 
         return lastLevel;
     }

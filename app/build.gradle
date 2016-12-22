@@ -44,7 +44,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
 
     // Material design
-    compile 'com.android.support:design:23.1.0'
+    compile 'com.android.support:design:23.2.0'
     compile 'com.roughike:bottom-bar:1.2.1'
 
     testCompile 'junit:junit:4.12'
