@@ -2,6 +2,7 @@ package com.example.melchor.boozenoise.fragments;
 
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -14,8 +15,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
+import com.example.melchor.boozenoise.DataCommunication;
 import com.example.melchor.boozenoise.R;
-import com.example.melchor.boozenoise.utils.GetDataFromUrl;
+import com.example.melchor.boozenoise.utils.GetBarsAroundMe;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -30,8 +32,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private MapView mapView;
     private GoogleMap map;
-    private double latitude, longitude;
-    private int RADIUS_IN_METERS = 1000;
+    private DataCommunication dataCommunication;
 
     private BottomSheetBehavior bottomSheetBehavior;
 
@@ -40,8 +41,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        View bottomSheet = getActivity().findViewById(R.id.fragment_bottom_sheet);
         bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.fragment_bottom_sheet));
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
@@ -52,13 +53,22 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
         view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new GetDataFromUrl(latitude, longitude, RADIUS_IN_METERS, map).execute();
+                new GetBarsAroundMe(dataCommunication.getLatitude(), dataCommunication.getLongitude(), dataCommunication.getRadiusInMeters(), map).execute();
             }
         });
 
         return view;
     }
 
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            dataCommunication = (DataCommunication) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement DataCommunication");
+        }
+    }
 
     /**************************************/
     /**              EVENTS              **/
@@ -87,8 +97,11 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         // Get Current Location
         Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        latitude = 43.696460;//myLocation.getLatitude();
-        longitude = 7.274179;//myLocation.getLongitude();
+        double latitude = 43.696460;//myLocation.getLatitude();
+        double longitude = 7.274179;//myLocation.getLongitude();
+
+        dataCommunication.setLatitude(latitude);
+        dataCommunication.setLongitude(longitude);
 
         // Move camera to current position
         LatLng latLng = new LatLng(latitude, longitude);
@@ -102,7 +115,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public boolean onMarkerClick(Marker marker) {
         bottomSheetBehavior.setPeekHeight(300);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         Log.d(TAG, marker.getTitle());
         return false;
     }
@@ -134,5 +147,4 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     /**************************************/
     /**            FUNCTIONS             **/
     /**************************************/
-
 }

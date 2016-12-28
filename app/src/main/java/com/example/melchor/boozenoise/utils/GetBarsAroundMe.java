@@ -11,15 +11,15 @@ import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
 
-public class GetDataFromUrl extends AsyncTask<Void,Void,ListBars> {
+public class GetBarsAroundMe extends AsyncTask<Void,Void,ListBars> {
 
-    private static final String TAG = GetDataFromUrl.class.getSimpleName();
+    private static final String TAG = GetBarsAroundMe.class.getSimpleName();
     private final String KEY = "AIzaSyBKlwR3R7oovTzIh7xepPRrbIO6n-da6jQ";
     private double latitude,longitude;
-    private double radius_in_meters;
+    private int radius_in_meters;
     private GoogleMap googleMap;
 
-    public GetDataFromUrl(double latitude, double longitude, int radius_in_meters, GoogleMap googleMap) {
+    public GetBarsAroundMe(double latitude, double longitude, int radius_in_meters, GoogleMap googleMap) {
         super();
         this.latitude = latitude;
         this.longitude = longitude;
@@ -37,12 +37,8 @@ public class GetDataFromUrl extends AsyncTask<Void,Void,ListBars> {
                 +"&type=bar"
                 +"&key="+KEY;
 
-        Log.d(TAG,"URL : "+url);
-
         // Making a request to url and getting response
         String jsonStr = httpHandler.makeServiceCall(url);
-
-        Log.e(TAG, "Response from url: " + jsonStr);
 
         Gson gson = new GsonBuilder().create();
         ListBars listBars = gson.fromJson(jsonStr, ListBars.class);

@@ -13,9 +13,8 @@
         <Button
             android:id="@+id/getBars"
             android:text="get Bars"
-            android:layout_width="71dp"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="45dp" />
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content" />
 
         <com.google.android.gms.maps.MapView
             android:id="@+id/maps"
@@ -24,21 +23,20 @@
 
     </LinearLayout>
 
-    <android.support.v4.widget.NestedScrollView
-        android:id="@+id/fragment_bottom_sheet"
-        android:layout_width="match_parent"
-        android:layout_height="350dp"
-        android:background="@android:color/holo_orange_light"
-        android:clipToPadding="true"
-        app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
-
-        <TextView
+        <FrameLayout
+            android:id="@+id/fragment_bottom_sheet"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
-            android:padding="16dp"
-            android:text="BLABLABLA"
-            android:textSize="16sp" />
+            android:background="@android:color/holo_orange_light"
+            android:clipToPadding="true"
+            app:layout_behavior="android.support.design.widget.BottomSheetBehavior">
 
-    </android.support.v4.widget.NestedScrollView>
+            <TextView
+                android:layout_width="match_parent"
+                android:layout_height="match_parent"
+                android:text="BLABLABLA"
+                android:textSize="16sp" />
+
+        </FrameLayout>
 
 </android.support.design.widget.CoordinatorLayout>

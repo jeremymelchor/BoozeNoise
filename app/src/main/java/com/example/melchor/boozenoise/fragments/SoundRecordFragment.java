@@ -1,24 +1,31 @@
 package com.example.melchor.boozenoise.fragments;
 
 import android.app.Fragment;
+import android.content.Context;
 import android.content.pm.PackageManager;
 import android.media.AudioFormat;
 import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.ArrayAdapter;
+import android.widget.ListView;
+import android.widget.TextView;
 
+import com.example.melchor.boozenoise.DataCommunication;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.activities.MainActivity;
-import com.google.firebase.database.DatabaseReference;
-import com.google.firebase.database.FirebaseDatabase;
+import com.example.melchor.boozenoise.utils.GetCurrentBar;
 
 import java.io.IOException;
+import java.lang.reflect.Array;
+import java.util.ArrayList;
 
 public class SoundRecordFragment extends Fragment {
 
@@ -32,11 +39,23 @@ public class SoundRecordFragment extends Fragment {
     private final int SAMPLE_RATE = 8000;
     private final int AUDIO_SAMPLES = 10;
 
+    private DataCommunication dataCommunication;
+    ArrayAdapter arrayAdapter;
+
+    /**************************************/
+    /**              EVENTS              **/
+    /**************************************/
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(com.example.melchor.boozenoise.R.layout.fragment_sound_record, container, false);
+
+        final ListView listView = (ListView) view.findViewById(android.R.id.list);
+        TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
+        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<String>());
+        listView.setEmptyView(emptyText);
+        listView.setAdapter(arrayAdapter);
 
         try {
             bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -56,15 +75,35 @@ public class SoundRecordFragment extends Fragment {
             }
         });
 
+        view.findViewById(R.id.getCurrentBar).setOnClickListener(new View.OnClickListener() {
+            public void onClick(View view) {
+                new GetCurrentBar(dataCommunication.getLatitude(), dataCommunication.getLongitude(), new GetCurrentBar.OnBarsFetched() {
+                    @Override
+                    public void onBarsFetched(ArrayList<String> listBars) {
+                        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listBars);
+                        listView.setAdapter(arrayAdapter);
+                    }
+                }).execute();
+            }
+        });
+
         return view;
     }
 
-    /**************************************/
-    /**              EVENTS              **/
-    /**************************************/
+
+    @Override
+    public void onAttach(Context context) {
+        super.onAttach(context);
+        try {
+            dataCommunication = (DataCommunication) context;
+        } catch (ClassCastException e) {
+            throw new ClassCastException(context.toString() + " must implement DataCommunication");
+        }
+    }
 
     /**
      * Called when the fragment is visible on screen
+     *
      * @param hidden false = fragment visible
      */
     @Override
@@ -105,12 +144,16 @@ public class SoundRecordFragment extends Fragment {
                         ie.printStackTrace();
                     }
                     averageDB += readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
-                    if (++nbSamples == AUDIO_SAMPLES) thread.interrupt();
+
+                    // End of recording
+                    if (++nbSamples == AUDIO_SAMPLES) {
+                        Log.d(TAG, "average DB : " + averageDB / AUDIO_SAMPLES);
+
+                        thread.interrupt();
+                    }
 
                     //todo: mettre dans la DB
-                    FirebaseDatabase database = FirebaseDatabase.getInstance();
-                    DatabaseReference myRef = database.getReference("message");
-                    myRef.setValue("Hello, World!");
+
 
                     /*runOnUiThread(new Runnable() {
                         @Override

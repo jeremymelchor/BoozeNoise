@@ -9,9 +9,4 @@ public class Photo {
     public int getHeight() { return height; }
     public int getWidth() { return width; }
     public String getPhoto_reference() { return photo_reference; }
-
-    @Override
-    public String toString() {
-        return "[height : " + height + ", width : " + width + ", photo_reference : " + photo_reference + "]";
-    }
 }

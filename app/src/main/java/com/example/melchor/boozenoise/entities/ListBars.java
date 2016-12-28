@@ -9,12 +9,12 @@ public class ListBars {
     @SerializedName("results")
     private ArrayList<Bar> resultsFromWebservice;
 
+    private String status;
+
     public ArrayList<Bar> getResultsFromWebservice() {
         return resultsFromWebservice;
     }
 
-    @Override
-    public String toString() {
-        return resultsFromWebservice.toString();
-    }
+    public String getStatus() { return status; }
+
 }
