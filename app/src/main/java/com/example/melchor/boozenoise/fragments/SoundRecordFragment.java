@@ -8,12 +8,12 @@ import android.media.AudioRecord;
 import android.media.MediaRecorder;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.app.ListFragment;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
@@ -24,10 +24,9 @@ import com.example.melchor.boozenoise.activities.MainActivity;
 import com.example.melchor.boozenoise.utils.GetCurrentBar;
 
 import java.io.IOException;
-import java.lang.reflect.Array;
 import java.util.ArrayList;
 
-public class SoundRecordFragment extends Fragment {
+public class SoundRecordFragment extends Fragment implements AdapterView.OnItemClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -40,22 +39,22 @@ public class SoundRecordFragment extends Fragment {
     private final int AUDIO_SAMPLES = 10;
 
     private DataCommunication dataCommunication;
-    ArrayAdapter arrayAdapter;
-
-    /**************************************/
-    /**              EVENTS              **/
-    /**************************************/
+    private ArrayAdapter arrayAdapter;
+    private ListView listView;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(com.example.melchor.boozenoise.R.layout.fragment_sound_record, container, false);
 
-        final ListView listView = (ListView) view.findViewById(android.R.id.list);
+        // Set ListView
+        listView = (ListView) view.findViewById(android.R.id.list);
         TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
         arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<String>());
         listView.setEmptyView(emptyText);
         listView.setAdapter(arrayAdapter);
+        listView.setOnItemClickListener(this);
+        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
 
         try {
             bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -194,4 +193,14 @@ public class SoundRecordFragment extends Fragment {
 
         return lastLevel;
     }
+
+    /**************************************/
+    /**         LISTVIEW EVENTS          **/
+    /**************************************/
+
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+       Log.d(TAG,""+adapterView.getAdapter().getItem(i));
+    }
+
 }
