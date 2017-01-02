@@ -11,6 +11,7 @@ public class Bar {
     private float rating;
     private String vicinity;
     private Geometry geometry;
+    private double decibels;
 
     @SerializedName("listPhotos")
     private ArrayList<Photo> listPhotos;
@@ -41,13 +42,10 @@ public class Bar {
         return listPhotos;
     }
 
+    public double getDecibels() { return decibels; }
+
     @Override
     public String toString() {
-        return "place_id : " + place_id + "\n"
-                + "name : " + name + "\n"
-                + "ratings : " + rating + "\n"
-                + "vicinity : " + vicinity + "\n"
-                + geometry.toString() + "\n"
-                + listPhotos.toString();
+        return name;
     }
 }

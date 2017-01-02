@@ -12,33 +12,59 @@ import com.google.firebase.database.Query;
 import java.util.HashMap;
 import java.util.Map;
 
-public class DatabaseManager extends AsyncTask<String, Void, Void> {
+public class DatabaseManager extends AsyncTask<Object, Void, Void> {
 
     private static final String TAG = DatabaseManager.class.getSimpleName();
-    private String databaseAction;
-    private ListBars listBars;
-    private ChildEventListener childEventListener;
-    private FirebaseDatabase database;
-    private DatabaseReference databaseReference;
 
-    public DatabaseManager(String databaseAction, ListBars listBars) {
+    private DatabaseReference databaseReference;
+    private String databaseAction;
+
+    public DatabaseManager(String databaseAction) {
         this.databaseAction = databaseAction;
-        this.listBars = listBars;
-        database = FirebaseDatabase.getInstance();
-        databaseReference = database.getReference("bars");
     }
 
     @Override
-    protected Void doInBackground(String... param) {
-        if (databaseAction.equals("write")) writeToDatabase();
+    protected void onPreExecute() {
+        databaseReference = FirebaseDatabase.getInstance().getReference("bars");
+    }
+
+    @Override
+    protected Void doInBackground(Object... param) {
+        switch (databaseAction) {
+            case "write":
+                writeToDatabase((ListBars) param[0]);
+                break;
+            case "update":
+                updateBarDecibels((Bar) param[0], (double) param[1]);
+                break;
+        }
         return null;
     }
 
-    private void writeToDatabase() {
+    /**************************************/
+    /**             FUNCTIONS            **/
+    /**************************************/
+
+    /**
+     * put all bars in listBars#getResultsFromWebService in the DB
+     * @param listBars Object containing all bars found
+     */
+    private void writeToDatabase(ListBars listBars) {
         for (Bar bar : listBars.getResultsFromWebservice()) {
             Map<String, Object> updates = new HashMap<>();
             updates.put(bar.getPlace_id(), bar);
             databaseReference.updateChildren(updates);
         }
+    }
+
+    /**
+     * Update a bar with its recorded decibels
+     * @param bar bar to update (found with place_id)
+     * @param decibel number of recorded decibels
+     */
+    private void updateBarDecibels(Bar bar, double decibel) {
+        Map<String,Object> update = new HashMap<>();
+        update.put("decibels",decibel);
+        databaseReference.child(bar.getPlace_id()).updateChildren(update);
     }
 }

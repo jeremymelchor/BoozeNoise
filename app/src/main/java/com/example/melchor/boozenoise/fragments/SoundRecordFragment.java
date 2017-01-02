@@ -21,7 +21,10 @@ import android.widget.TextView;
 import com.example.melchor.boozenoise.DataCommunication;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.activities.MainActivity;
+import com.example.melchor.boozenoise.entities.Bar;
+import com.example.melchor.boozenoise.utils.DatabaseManager;
 import com.example.melchor.boozenoise.utils.GetCurrentBar;
+import com.example.melchor.boozenoise.utils.SoundRecorder;
 
 import java.io.IOException;
 import java.util.ArrayList;
@@ -32,17 +35,9 @@ public class SoundRecordFragment extends Fragment implements
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
-
-    private AudioRecord audioRecord;
-    private int bufferSize;
-    private Thread thread;
-    private final int SAMPLE_DELAY = 2000;
-    private final int SAMPLE_RATE = 8000;
-    private final int AUDIO_SAMPLES = 10;
-
     private DataCommunication dataCommunication;
-    private ArrayAdapter arrayAdapter;
     private ListView listView;
+    private Bar myBar;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -52,25 +47,18 @@ public class SoundRecordFragment extends Fragment implements
         // Set ListView
         listView = (ListView) view.findViewById(android.R.id.list);
         TextView emptyText = (TextView) view.findViewById(android.R.id.empty);
-        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<String>());
+        ArrayAdapter arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, new ArrayList<>());
         listView.setEmptyView(emptyText);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(this);
 
         // Set listeners on buttons
-        view.findViewById(R.id.getCurrentBar).setOnClickListener(this);
         view.findViewById(R.id.record).setOnClickListener(this);
+        view.findViewById(R.id.sendRecord).setOnClickListener(this);
 
-        try {
-            bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
-            audioRecord = new AudioRecord(MediaRecorder.AudioSource.MIC, SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT, bufferSize);
-        } catch (Exception e) {
-            Log.e("TrackingFlow", "Exception", e);
-        }
 
         return view;
     }
-
 
     @Override
     public void onAttach(Context context) {
@@ -98,91 +86,13 @@ public class SoundRecordFragment extends Fragment implements
         }
     }
 
-
-    /**************************************/
-    /**            FUNCTIONS             **/
-    /**************************************/
-
-    /**
-     * See http://www.doepiccoding.com/blog/?p=195
-     *
-     * @param view
-     * @throws IOException
-     */
-    public void recordSound(View view) throws IOException {
-        audioRecord.startRecording();
-
-        thread = new Thread(new Runnable() {
-
-            @Override
-            public void run() {
-                double averageDB = 0, nbSamples = 0;
-                while ((thread != null) && !thread.isInterrupted()) {
-                    //Let's make the thread sleep for a the approximate sampling time
-                    try {
-                        Thread.sleep(SAMPLE_DELAY);
-                    } catch (InterruptedException ie) {
-                        ie.printStackTrace();
-                    }
-                    averageDB += readAudioBuffer();//After this call we can get the last value assigned to the lastLevel variable
-
-                    // End of recording
-                    if (++nbSamples == AUDIO_SAMPLES) {
-                        Log.d(TAG, "average DB : " + averageDB / AUDIO_SAMPLES);
-
-                        thread.interrupt();
-                    }
-
-                    //todo: mettre dans la DB
-
-
-                    /*runOnUiThread(new Runnable() {
-                        @Override
-                        public void run() {
-                            Log.d(TAG, "DB : " + mediumDB);
-                        }
-                    });*/
-                }
-            }
-        });
-
-        thread.start();
-    }
-
-    /**
-     * Functionality that gets the sound level out of the sample
-     */
-    private double readAudioBuffer() {
-        double lastLevel = 0;
-
-        try {
-            short[] buffer = new short[bufferSize];
-            int bufferReadResult;
-
-            if (audioRecord != null) {
-
-                bufferReadResult = audioRecord.read(buffer, 0, bufferSize);
-                double sumLevel = 0;
-                for (int i = 0; i < bufferReadResult; i++) {
-                    if (buffer[i] != 0)
-                        sumLevel += 20 * Math.log10(((double) Math.abs(buffer[i])) / 65535.0);
-                }
-                lastLevel = Math.abs((sumLevel / bufferReadResult));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
-        }
-
-        return lastLevel;
-    }
-
     /**************************************/
     /**         LISTVIEW EVENTS          **/
     /**************************************/
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        Log.d(TAG, "" + adapterView.getAdapter().getItem(i));
+        myBar = (Bar) adapterView.getAdapter().getItem(i);
     }
 
     /**************************************/
@@ -193,15 +103,11 @@ public class SoundRecordFragment extends Fragment implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.record:
-                try {
-                    recordSound(view);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
+                new SoundRecorder().execute();
                 break;
-            case R.id.getCurrentBar:
-                new GetCurrentBar(dataCommunication.getLatitude(), dataCommunication.getLongitude(),
-                        getActivity(), listView).execute();
+            case R.id.sendRecord:
+                DatabaseManager databaseManager = new DatabaseManager("update");
+                databaseManager.execute(myBar, (double) 10);
                 break;
         }
     }

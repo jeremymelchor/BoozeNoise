@@ -18,8 +18,9 @@ public class GetCurrentBar extends AsyncTask<Void, Void, ListBars> {
 
     private static final String TAG = GetCurrentBar.class.getSimpleName();
     private final String KEY = "AIzaSyBKlwR3R7oovTzIh7xepPRrbIO6n-da6jQ";
-    private double latitude, longitude;
     private final int RADIUS_IN_METERS = 50;
+
+    private double latitude, longitude;
     private Activity activity;
     private ProgressDialog progressDialog;
     private ListView listView;
@@ -63,14 +64,14 @@ public class GetCurrentBar extends AsyncTask<Void, Void, ListBars> {
     }
 
     protected void onPostExecute(ListBars listBars) {
-        ArrayList<String> list = new ArrayList<>();
+        ArrayList<Bar> list = new ArrayList<>();
 
         for (Bar bar : listBars.getResultsFromWebservice()) {
-            list.add(bar.getName());
+            list.add(bar);
         }
 
         progressDialog.dismiss();
-        ArrayAdapter arrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_single_choice, list);
+        ArrayAdapter arrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
         listView.setAdapter(arrayAdapter);
     }
 

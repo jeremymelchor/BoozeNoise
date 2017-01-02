@@ -49,8 +49,8 @@ public class GetBarsAroundMe extends AsyncTask<Void,Void,ListBars> {
     protected void onPostExecute(ListBars listBars) {
         Log.d(TAG,"WRITING TO DB..");
         // Persist bars found
-        DatabaseManager databaseManager = new DatabaseManager("write",listBars);
-        databaseManager.execute();
+        DatabaseManager databaseManager = new DatabaseManager("write");
+        databaseManager.execute(listBars);
 
         // Update map
         for (Bar bar : listBars.getResultsFromWebservice()) {
