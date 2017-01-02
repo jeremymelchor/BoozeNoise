@@ -26,7 +26,9 @@ import com.example.melchor.boozenoise.utils.GetCurrentBar;
 import java.io.IOException;
 import java.util.ArrayList;
 
-public class SoundRecordFragment extends Fragment implements AdapterView.OnItemClickListener {
+public class SoundRecordFragment extends Fragment implements
+        AdapterView.OnItemClickListener,
+        View.OnClickListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -54,7 +56,10 @@ public class SoundRecordFragment extends Fragment implements AdapterView.OnItemC
         listView.setEmptyView(emptyText);
         listView.setAdapter(arrayAdapter);
         listView.setOnItemClickListener(this);
-        listView.setChoiceMode(ListView.CHOICE_MODE_SINGLE);
+
+        // Set listeners on buttons
+        view.findViewById(R.id.getCurrentBar).setOnClickListener(this);
+        view.findViewById(R.id.record).setOnClickListener(this);
 
         try {
             bufferSize = AudioRecord.getMinBufferSize(SAMPLE_RATE, AudioFormat.CHANNEL_IN_MONO, AudioFormat.ENCODING_PCM_16BIT);
@@ -62,29 +67,6 @@ public class SoundRecordFragment extends Fragment implements AdapterView.OnItemC
         } catch (Exception e) {
             Log.e("TrackingFlow", "Exception", e);
         }
-
-        /** Set view listeners **/
-        view.findViewById(R.id.record).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                try {
-                    recordSound(v);
-                } catch (IOException e) {
-                    e.printStackTrace();
-                }
-            }
-        });
-
-        view.findViewById(R.id.getCurrentBar).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View view) {
-                new GetCurrentBar(dataCommunication.getLatitude(), dataCommunication.getLongitude(), new GetCurrentBar.OnBarsFetched() {
-                    @Override
-                    public void onBarsFetched(ArrayList<String> listBars) {
-                        arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listBars);
-                        listView.setAdapter(arrayAdapter);
-                    }
-                }).execute();
-            }
-        });
 
         return view;
     }
@@ -200,7 +182,27 @@ public class SoundRecordFragment extends Fragment implements AdapterView.OnItemC
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-       Log.d(TAG,""+adapterView.getAdapter().getItem(i));
+        Log.d(TAG, "" + adapterView.getAdapter().getItem(i));
     }
 
+    /**************************************/
+    /**          BUTTONS EVENTS          **/
+    /**************************************/
+
+    @Override
+    public void onClick(View view) {
+        switch (view.getId()) {
+            case R.id.record:
+                try {
+                    recordSound(view);
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+                break;
+            case R.id.getCurrentBar:
+                new GetCurrentBar(dataCommunication.getLatitude(), dataCommunication.getLongitude(),
+                        getActivity(), listView).execute();
+                break;
+        }
+    }
 }
