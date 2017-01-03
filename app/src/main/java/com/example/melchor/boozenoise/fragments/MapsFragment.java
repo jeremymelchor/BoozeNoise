@@ -3,7 +3,6 @@ package com.example.melchor.boozenoise.fragments;
 
 import android.Manifest;
 import android.app.Fragment;
-import android.content.Context;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
@@ -17,9 +16,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 
-import com.example.melchor.boozenoise.DataCommunication;
+import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.R;
-import com.example.melchor.boozenoise.utils.GetBarsAroundMe;
+import com.example.melchor.boozenoise.asynctasks.GetBarsAroundMe;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -34,7 +33,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     private MapView mapView;
     private GoogleMap map;
-    private DataCommunication dataCommunication;
 
     private BottomSheetBehavior bottomSheetBehavior;
 
@@ -56,27 +54,17 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         // Set GPS permissions
         if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
                 || ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION,Manifest.permission.ACCESS_COARSE_LOCATION};
+            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
             ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
         }
 
         view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
             public void onClick(View v) {
-                new GetBarsAroundMe(dataCommunication.getLatitude(), dataCommunication.getLongitude(), dataCommunication.getRadiusInMeters(), map).execute();
+                new GetBarsAroundMe(Data.getLatitude(), Data.getLongitude(), Data.getRadiusInMeters(), map).execute();
             }
         });
 
         return view;
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        try {
-            dataCommunication = (DataCommunication) context;
-        } catch (ClassCastException e) {
-            throw new ClassCastException(context.toString() + " must implement DataCommunication");
-        }
     }
 
     /**************************************/
@@ -109,8 +97,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         double latitude = 43.696460;//myLocation.getLatitude();
         double longitude = 7.274179;//myLocation.getLongitude();
 
-        dataCommunication.setLatitude(latitude);
-        dataCommunication.setLongitude(longitude);
+        Data.setLatitude(latitude);
+        Data.setLongitude(longitude);
 
         // Move camera to current position
         LatLng latLng = new LatLng(latitude, longitude);

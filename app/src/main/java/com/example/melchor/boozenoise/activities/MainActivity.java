@@ -8,21 +8,18 @@ import android.support.design.widget.BottomNavigationView;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
-import com.example.melchor.boozenoise.DataCommunication;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.fragments.MapsFragment;
 import com.example.melchor.boozenoise.fragments.SoundRecordFragment;
 import com.example.melchor.boozenoise.fragments.UserProfileFragment;
 
-public class MainActivity extends AppCompatActivity implements DataCommunication {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private final MapsFragment mapsFragment = new MapsFragment();
     private final UserProfileFragment userProfileFragment = new UserProfileFragment();
     private final SoundRecordFragment soundRecordFragment = new SoundRecordFragment();
 
-    private double latitude, longitude;
-    private int radiusInMeters = 1000;
 
     /**************************************/
     /**              EVENTS              **/
@@ -90,35 +87,4 @@ public class MainActivity extends AppCompatActivity implements DataCommunication
         fragmentTransaction.show(fragment_to_show);
         fragmentTransaction.commit();
     }
-
-    /**************************************/
-    /**     INTERFACE IMPLEMENTATION     **/
-    /**************************************/
-
-
-    @Override
-    public void setLatitude(double latitude) {
-        this.latitude = latitude;
-    }
-
-    @Override
-    public void setLongitude(double longitude) {
-        this.longitude = longitude;
-    }
-
-    @Override
-    public double getLatitude() {
-        return latitude;
-    }
-
-    @Override
-    public double getLongitude() {
-        return longitude;
-    }
-
-    @Override
-    public int getRadiusInMeters() {
-        return radiusInMeters;
-    }
-
 }

@@ -44,4 +44,13 @@
         android:layout_marginEnd="41dp"
         android:layout_marginBottom="33dp" />
 
+    <TextView
+        android:text="TextView"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:id="@+id/progressDB"
+        android:layout_below="@+id/record"
+        android:layout_centerHorizontal="true"
+        android:textAppearance="@android:style/TextAppearance.Material.Large" />
+
 </RelativeLayout>
