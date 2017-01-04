@@ -15,6 +15,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.TextView;
 
 import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.R;
@@ -111,7 +112,9 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        bottomSheetBehavior.setPeekHeight(300);
+        bottomSheetBehavior.setPeekHeight(400);
+        TextView barName = (TextView) getView().findViewById(R.id.bottom_sheet_bar_name);
+        barName.setText(marker.getTitle());
         Log.d(TAG, marker.getTitle());
         return false;
     }
