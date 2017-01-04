@@ -12,6 +12,7 @@ import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.fragments.MapsFragment;
 import com.example.melchor.boozenoise.fragments.SoundRecordFragment;
 import com.example.melchor.boozenoise.fragments.UserProfileFragment;
+import com.google.firebase.FirebaseApp;
 
 public class MainActivity extends AppCompatActivity {
 
@@ -29,6 +30,9 @@ public class MainActivity extends AppCompatActivity {
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
+
+        //initialize Firebase
+        FirebaseApp.initializeApp(this);
 
         // Add all fragments and set maps fragment visibility
         FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();

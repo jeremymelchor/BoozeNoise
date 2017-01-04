@@ -42,7 +42,7 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.fragment_bottom_sheet));
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_COLLAPSED);
+        bottomSheetBehavior.setPeekHeight(0);
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
@@ -112,7 +112,6 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public boolean onMarkerClick(Marker marker) {
         bottomSheetBehavior.setPeekHeight(300);
-        bottomSheetBehavior.setState(BottomSheetBehavior.STATE_EXPANDED);
         Log.d(TAG, marker.getTitle());
         return false;
     }

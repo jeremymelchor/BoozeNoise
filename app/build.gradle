@@ -2,7 +2,7 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '24.0.3'
+    buildToolsVersion '25.0.1'
     defaultConfig {
         applicationId "com.boozenoise.android"
         minSdkVersion 23
@@ -39,7 +39,7 @@ dependencies {
     compile 'com.google.code.gson:gson:2.6.2'
     // Material design
     compile 'com.android.support:design:25.1.0'
-    //compile 'com.roughike:bottom-bar:1.2.1'
+
     testCompile 'junit:junit:4.12'
 }
 

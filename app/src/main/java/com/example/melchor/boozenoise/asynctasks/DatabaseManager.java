@@ -23,7 +23,8 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
 
     @Override
     protected void onPreExecute() {
-        databaseReference = FirebaseDatabase.getInstance().getReference("bars");
+        FirebaseDatabase firebaseDatabase = FirebaseDatabase.getInstance();
+        databaseReference = firebaseDatabase.getReference("bars");
     }
 
     @Override
