@@ -1,4 +1,4 @@
-<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_maps"
     android:layout_width="match_parent"
@@ -33,7 +33,7 @@
 
         <RelativeLayout
             android:layout_width="match_parent"
-            android:layout_height="400px"
+            android:layout_height="94dp"
             android:background="@android:color/holo_purple">
 
             <TextView
@@ -41,34 +41,35 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:text="Bar Name"
-                android:layout_marginTop="25dp"
+                android:layout_marginTop="12dp"
+                android:layout_marginStart="35dp"
+                android:textSize="24sp"
                 android:layout_alignParentTop="true"
-                android:layout_alignParentStart="true"
-                android:layout_marginStart="34dp"
-                android:textSize="24sp" />
+                android:layout_alignParentStart="true" />
 
             <ImageView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 app:srcCompat="@drawable/ic_hearing_black_24dp"
                 android:id="@+id/imageView"
-                android:layout_marginTop="15dp"
+                android:layout_marginTop="13dp"
                 android:layout_below="@+id/bottom_sheet_bar_name"
-                android:layout_alignStart="@+id/bottom_sheet_bar_name" />
+                android:layout_alignStart="@+id/bottom_sheet_bar_name"
+                android:layout_marginStart="15dp" />
 
             <TextView
                 android:text="Peu bruyant"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginStart="9dp"
+                android:layout_marginStart="12dp"
                 android:id="@+id/bottom_sheet_noise"
-                android:layout_alignTop="@+id/imageView"
-                android:layout_toEndOf="@+id/imageView"
+                android:gravity="center_vertical"
                 android:layout_alignBottom="@+id/imageView"
-                android:gravity="center_vertical" />
+                android:layout_toEndOf="@+id/imageView"
+                android:layout_alignTop="@+id/imageView" />
 
         </RelativeLayout>
 
     </RelativeLayout>
 
-</android.support.design.widget.CoordinatorLayout>
+</FrameLayout>

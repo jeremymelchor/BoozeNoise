@@ -1,5 +1,10 @@
 package com.example.melchor.boozenoise;
 
+import android.content.res.Resources;
+import android.util.DisplayMetrics;
+
+import static java.security.AccessController.getContext;
+
 public class Data {
 
     private static final int SAMPLE_DELAY = 2000;
@@ -52,5 +57,10 @@ public class Data {
 
     public static String getKEY() {
         return KEY;
+    }
+
+    public static float dpToPx(int dp) {
+        DisplayMetrics displayMetrics = Resources.getSystem().getDisplayMetrics();
+        return dp * ((float) displayMetrics.densityDpi / DisplayMetrics.DENSITY_DEFAULT);
     }
 }

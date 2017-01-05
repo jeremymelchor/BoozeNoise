@@ -112,7 +112,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        bottomSheetBehavior.setPeekHeight(400);
+        // 56 because it's the height of the bottom bar navigation
+        bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56+94)));
         TextView barName = (TextView) getView().findViewById(R.id.bottom_sheet_bar_name);
         barName.setText(marker.getTitle());
         Log.d(TAG, marker.getTitle());
