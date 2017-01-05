@@ -1,4 +1,4 @@
-<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<android.support.design.widget.CoordinatorLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:id="@+id/fragment_maps"
     android:layout_width="match_parent"
@@ -68,8 +68,20 @@
                 android:layout_toEndOf="@+id/imageView"
                 android:layout_alignTop="@+id/imageView" />
 
+            <android.support.design.widget.FloatingActionButton
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:clickable="true"
+                app:fabSize="normal"
+                android:src="@drawable/ic_itinerary"
+                android:layout_marginEnd="36dp"
+                android:id="@+id/floatingActionButton5"
+                android:layout_alignBottom="@+id/bottom_sheet_bar_name"
+                android:layout_alignParentEnd="true"
+                android:layout_marginBottom="14dp" />
+
         </RelativeLayout>
 
     </RelativeLayout>
 
-</FrameLayout>
+</android.support.design.widget.CoordinatorLayout>

@@ -1,5 +1,6 @@
 package com.example.melchor.boozenoise.activities;
 
+import android.app.Activity;
 import android.app.Fragment;
 import android.app.FragmentTransaction;
 import android.os.Bundle;
@@ -14,7 +15,7 @@ import com.example.melchor.boozenoise.fragments.SoundRecordFragment;
 import com.example.melchor.boozenoise.fragments.UserProfileFragment;
 import com.google.firebase.FirebaseApp;
 
-public class MainActivity extends AppCompatActivity {
+public class MainActivity extends Activity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private final MapsFragment mapsFragment = new MapsFragment();

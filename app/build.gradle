@@ -2,11 +2,11 @@ apply plugin: 'com.android.application'
 
 android {
     compileSdkVersion 25
-    buildToolsVersion '25.0.1'
+    buildToolsVersion '25.0.2'
     defaultConfig {
         applicationId "com.boozenoise.android"
         minSdkVersion 23
-        targetSdkVersion 23
+        targetSdkVersion 25
         versionCode 1
         versionName "1.0"
         testInstrumentationRunner "android.support.test.runner.AndroidJUnitRunner"
@@ -33,12 +33,13 @@ dependencies {
     compile 'com.google.firebase:firebase-auth:10.0.1'
     // Realtime database
     compile 'com.google.firebase:firebase-database:10.0.1'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+
     compile 'com.google.android.gms:play-services:10.0.1'
     // JSON parsing library
     compile 'com.google.code.gson:gson:2.6.2'
     // Material design
     compile 'com.android.support:design:25.1.0'
+    compile 'com.android.support:appcompat-v7:25.1.0'
 
     testCompile 'junit:junit:4.12'
 }
