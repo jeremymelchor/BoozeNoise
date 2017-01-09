@@ -8,7 +8,9 @@ import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
 import android.os.Bundle;
+import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
 import android.util.Log;
@@ -30,20 +32,40 @@ import com.google.android.gms.maps.model.Marker;
 import static android.content.ContentValues.TAG;
 import static android.content.Context.LOCATION_SERVICE;
 
-public class MapsFragment extends Fragment implements OnMapReadyCallback, GoogleMap.OnMarkerClickListener {
+public class MapsFragment extends Fragment implements
+        OnMapReadyCallback,
+        GoogleMap.OnMarkerClickListener {
 
     private MapView mapView;
     private GoogleMap map;
 
     private BottomSheetBehavior bottomSheetBehavior;
+    private FloatingActionButton itinerary;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
 
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.fragment_bottom_sheet));
         bottomSheetBehavior.setPeekHeight(0);
+        bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
+            @Override
+            public void onStateChanged(@NonNull View bottomSheet, int newState) {
+                // this part hides the button immediately
+                if (BottomSheetBehavior.STATE_DRAGGING == newState) {
+                    itinerary.animate().scaleX(0).scaleY(0).setDuration(300).start();
+                } else if (BottomSheetBehavior.STATE_COLLAPSED == newState) {
+                    itinerary.animate().scaleX(1).scaleY(1).setDuration(300).start();
+                }
+            }
+
+            @Override
+            public void onSlide(@NonNull View bottomSheet, float slideOffset) {
+            }
+        });
+        itinerary = (FloatingActionButton) view.findViewById(R.id.itinerary);
+        itinerary.setVisibility(View.INVISIBLE);
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
@@ -113,7 +135,8 @@ public class MapsFragment extends Fragment implements OnMapReadyCallback, Google
     @Override
     public boolean onMarkerClick(Marker marker) {
         // 56 because it's the height of the bottom bar navigation
-        bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56+94)));
+        bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56 + 94)));
+        itinerary.setVisibility(View.VISIBLE);
         TextView barName = (TextView) getView().findViewById(R.id.bottom_sheet_bar_name);
         barName.setText(marker.getTitle());
         Log.d(TAG, marker.getTitle());
