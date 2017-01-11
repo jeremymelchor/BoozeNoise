@@ -13,6 +13,7 @@ import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.content.ContextCompat;
+import android.support.v4.view.ViewPager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,7 +48,7 @@ public class MapsFragment extends Fragment implements
 
         View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
-        bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.fragment_bottom_sheet));
+        bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
         bottomSheetBehavior.setPeekHeight(0);
         bottomSheetBehavior.setBottomSheetCallback(new BottomSheetBehavior.BottomSheetCallback() {
             @Override
@@ -64,8 +65,13 @@ public class MapsFragment extends Fragment implements
             public void onSlide(@NonNull View bottomSheet, float slideOffset) {
             }
         });
+
         itinerary = (FloatingActionButton) view.findViewById(R.id.itinerary);
         itinerary.setVisibility(View.INVISIBLE);
+
+        ViewPager viewPager = (ViewPager) view.findViewById(R.id.viewPageAndroid);
+        ImageSliderAdapter imageSliderAdapter = new ImageSliderAdapter(getContext());
+        viewPager.setAdapter(imageSliderAdapter);
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
