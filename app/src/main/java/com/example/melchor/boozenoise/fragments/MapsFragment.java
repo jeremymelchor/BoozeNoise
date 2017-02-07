@@ -1,7 +1,6 @@
 package com.example.melchor.boozenoise.fragments;
 
 
-import android.Manifest;
 import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
@@ -14,19 +13,17 @@ import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
-import android.support.v4.content.ContextCompat;
 import android.support.v4.view.ViewPager;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.asynctasks.GetBarsAroundMe;
 import com.example.melchor.boozenoise.entities.Bar;
-import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -34,7 +31,6 @@ import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
 
-import static android.content.ContentValues.TAG;
 import static android.content.Context.LOCATION_SERVICE;
 
 public class MapsFragment extends Fragment implements
@@ -68,8 +64,10 @@ public class MapsFragment extends Fragment implements
                 // this part hides the button immediately
                 if (BottomSheetBehavior.STATE_DRAGGING == newState) {
                     itinerary.animate().scaleX(0).scaleY(0).setDuration(300).start();
+                    getBars.animate().scaleX(0).scaleY(0).setDuration(300).start();
                 } else if (BottomSheetBehavior.STATE_COLLAPSED == newState) {
                     itinerary.animate().scaleX(1).scaleY(1).setDuration(300).start();
+                    getBars.animate().scaleX(1).scaleY(1).setDuration(300).start();
                 } else if (BottomSheetBehavior.STATE_EXPANDED == newState) {
 
                 }
@@ -121,19 +119,17 @@ public class MapsFragment extends Fragment implements
         // Gets the Map
         mapView.getMapAsync(this);
 
-        // Set GPS permissions
-        if (ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_COARSE_LOCATION) == PackageManager.PERMISSION_DENIED
-                || ContextCompat.checkSelfPermission(this.getContext(), Manifest.permission.ACCESS_FINE_LOCATION) == PackageManager.PERMISSION_DENIED) {
-            String[] permissions = new String[]{Manifest.permission.ACCESS_FINE_LOCATION, Manifest.permission.ACCESS_COARSE_LOCATION};
-            ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
-        }
-
         return view;
     }
 
     @Override
     public void onResume() {
         super.onResume();
+        if (ActivityCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
+                && ActivityCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
+            String[] permissions = new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
+            ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
+        }
         mapView.onResume();
     }
 
@@ -166,35 +162,38 @@ public class MapsFragment extends Fragment implements
             String[] permissions = new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
             ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
         }
-        this.map = googleMap;
-        map.setMyLocationEnabled(true);
+        else {
+            this.map = googleMap;
+            map.setMyLocationEnabled(true);
 
-        // Get LocationManager object from System Service LOCATION_SERVICE.
-        // We need to call getActivity because fragment doesn't extends Context
-        LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
+            // Get LocationManager object from System Service LOCATION_SERVICE.
+            // We need to call getActivity because fragment doesn't extends Context
+            LocationManager locationManager = (LocationManager) getActivity().getSystemService(LOCATION_SERVICE);
 
-        // Create a criteria object to retrieve provider
-        Criteria criteria = new Criteria();
+            // Create a criteria object to retrieve provider
+            Criteria criteria = new Criteria();
 
-        // Get the name of the best provider
-        String provider = locationManager.getBestProvider(criteria, true);
+            // Get the name of the best provider
+            String provider = locationManager.getBestProvider(criteria, true);
 
-        // Get Current Location
-        Location myLocation = locationManager.getLastKnownLocation(provider);
+            // Get Current Location
+            Location myLocation = locationManager.getLastKnownLocation(provider);
 
-        double latitude = 43.696460;//myLocation.getLatitude();
-        double longitude = 7.274179;//myLocation.getLongitude();
+            double latitude = 43.696460;//myLocation.getLatitude();
+            double longitude = 7.274179;//myLocation.getLongitude();
 
-        Data.setLatitude(latitude);
-        Data.setLongitude(longitude);
+            Data.setLatitude(latitude);
+            Data.setLongitude(longitude);
 
-        // Move camera to current position
-        LatLng latLng = new LatLng(latitude, longitude);
-        map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
-        map.animateCamera(CameraUpdateFactory.zoomTo(15));
+            // Move camera to current position
+            LatLng latLng = new LatLng(latitude, longitude);
+            map.moveCamera(CameraUpdateFactory.newLatLng(latLng));
+            map.animateCamera(CameraUpdateFactory.zoomTo(15));
 
-        // Set listener on marker clicks
-        map.setOnMarkerClickListener(this);
+            // Set listener on marker clicks
+            map.setOnMarkerClickListener(this);
+        }
+
     }
 
     @Override
@@ -202,7 +201,7 @@ public class MapsFragment extends Fragment implements
         // 56 because it's the height of the bottom bar navigation
         bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56 + 94)));
         itinerary.setVisibility(View.VISIBLE);
-        getBars.setPadding(0,0,0,(int) Data.dpToPx(56));
+
 
         barSelected = (Bar) marker.getTag();
 
@@ -210,6 +209,14 @@ public class MapsFragment extends Fragment implements
         TextView barName = (TextView) getView().findViewById(R.id.bottom_sheet_bar_name);
         barName.setText(barSelected.getName());
         return false;
+    }
+
+    public static void setMargins (View v, int l, int t, int r, int b) {
+        if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
+            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
+            p.setMargins(l, t, r, b);
+            v.requestLayout();
+        }
     }
 
     @Override
