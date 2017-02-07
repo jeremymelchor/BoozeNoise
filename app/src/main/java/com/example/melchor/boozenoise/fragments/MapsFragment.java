@@ -26,6 +26,7 @@ import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.asynctasks.GetBarsAroundMe;
 import com.example.melchor.boozenoise.entities.Bar;
+import com.getbase.floatingactionbutton.FloatingActionsMenu;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -46,6 +47,7 @@ public class MapsFragment extends Fragment implements
 
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton itinerary;
+    private com.getbase.floatingactionbutton.FloatingActionButton getBars;
 
     private Bar barSelected;
 
@@ -78,6 +80,28 @@ public class MapsFragment extends Fragment implements
             }
         });
 
+
+
+        /*com.getbase.floatingactionbutton.FloatingActionButton actionC = new com.getbase.floatingactionbutton.FloatingActionButton(getContext());
+        actionC.setTitle("Hide/Show Action above");
+        final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) view.findViewById(R.id.multiple_actions);
+        menuMultipleActions.addButton(actionC);
+        final com.getbase.floatingactionbutton.FloatingActionButton actionA = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.action_a);
+        actionA.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                actionA.setTitle("Action A clicked");
+            }
+        });*/
+
+        getBars = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.getBars);
+
+
+
+
+
+
+
         itinerary = (FloatingActionButton) view.findViewById(R.id.itinerary);
         itinerary.setVisibility(View.INVISIBLE);
 
@@ -92,6 +116,7 @@ public class MapsFragment extends Fragment implements
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
         mapView.onCreate(savedInstanceState);
+
 
         // Gets the Map
         mapView.getMapAsync(this);
@@ -177,6 +202,8 @@ public class MapsFragment extends Fragment implements
         // 56 because it's the height of the bottom bar navigation
         bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56 + 94)));
         itinerary.setVisibility(View.VISIBLE);
+        getBars.setPadding(0,0,0,(int) Data.dpToPx(56));
+
         barSelected = (Bar) marker.getTag();
 
         // set bar name on bottom sheet peek

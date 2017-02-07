@@ -15,7 +15,7 @@ import com.example.melchor.boozenoise.fragments.SoundRecordFragment;
 import com.example.melchor.boozenoise.fragments.UserProfileFragment;
 import com.google.firebase.FirebaseApp;
 
-public class MainActivity extends Activity {
+public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();
     private final MapsFragment mapsFragment = new MapsFragment();
