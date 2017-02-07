@@ -14,6 +14,7 @@ import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
+import com.google.android.gms.maps.model.Marker;
 import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
@@ -69,10 +70,9 @@ public class GetBarsAroundMe extends AsyncTask<Void, Void, ListBars> {
 
             MarkerOptions marker = new MarkerOptions()
                     .position(latLng)
-                    .title(bar.getName())
                     .icon(getMarkerIcon(decibel));
 
-            googleMap.addMarker(marker);
+            googleMap.addMarker(marker).setTag(bar);
         }
     }
 

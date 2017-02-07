@@ -3,10 +3,12 @@ package com.example.melchor.boozenoise.fragments;
 
 import android.Manifest;
 import android.app.Fragment;
+import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
+import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
@@ -23,6 +25,7 @@ import android.widget.TextView;
 import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.asynctasks.GetBarsAroundMe;
+import com.example.melchor.boozenoise.entities.Bar;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
@@ -43,6 +46,12 @@ public class MapsFragment extends Fragment implements
 
     private BottomSheetBehavior bottomSheetBehavior;
     private FloatingActionButton itinerary;
+
+    private Bar barSelected;
+
+    //==============================================================================================
+    // Lifecycle
+    //==============================================================================================
 
     @Override
     public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
@@ -78,6 +87,7 @@ public class MapsFragment extends Fragment implements
 
         //Listeners
         view.findViewById(R.id.getBars).setOnClickListener(this);
+        itinerary.setOnClickListener(this);
 
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
@@ -120,9 +130,9 @@ public class MapsFragment extends Fragment implements
         mapView.onLowMemory();
     }
 
-    /**************************************/
-    /**              EVENTS              **/
-    /**************************************/
+    //==============================================================================================
+    // Events implementation
+    //==============================================================================================
 
     @Override
     public void onMapReady(GoogleMap googleMap) {
@@ -167,9 +177,11 @@ public class MapsFragment extends Fragment implements
         // 56 because it's the height of the bottom bar navigation
         bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56 + 94)));
         itinerary.setVisibility(View.VISIBLE);
+        barSelected = (Bar) marker.getTag();
+
+        // set bar name on bottom sheet peek
         TextView barName = (TextView) getView().findViewById(R.id.bottom_sheet_bar_name);
-        barName.setText(marker.getTitle());
-        Log.d(TAG, marker.getTitle());
+        barName.setText(barSelected.getName());
         return false;
     }
 
@@ -179,10 +191,15 @@ public class MapsFragment extends Fragment implements
             case R.id.getBars:
                 new GetBarsAroundMe(this.getContext(), Data.getLatitude(), Data.getLongitude(), Data.getRadiusInMeters(), map).execute();
                 break;
+            case R.id.itinerary:
+                Uri googleMapsUri = Uri.parse("google.navigation:q="+barSelected.getVicinity());
+                Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapsUri);
+                startActivity(mapIntent);
+                break;
         }
     }
 
-    /**************************************/
-    /**            FUNCTIONS             **/
-    /**************************************/
+    //==============================================================================================
+    // Utils functions
+    //==============================================================================================
 }
