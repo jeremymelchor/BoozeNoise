@@ -35,7 +35,8 @@ import static android.content.Context.LOCATION_SERVICE;
 
 public class MapsFragment extends Fragment implements
         OnMapReadyCallback,
-        GoogleMap.OnMarkerClickListener {
+        GoogleMap.OnMarkerClickListener,
+        View.OnClickListener {
 
     private MapView mapView;
     private GoogleMap map;
@@ -44,9 +45,9 @@ public class MapsFragment extends Fragment implements
     private FloatingActionButton itinerary;
 
     @Override
-    public View onCreateView(final LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
+    public View onCreateView(final LayoutInflater inflater, final ViewGroup container, Bundle savedInstanceState) {
 
-        View view = inflater.inflate(R.layout.fragment_maps, container, false);
+        final View view = inflater.inflate(R.layout.fragment_maps, container, false);
 
         bottomSheetBehavior = BottomSheetBehavior.from(view.findViewById(R.id.bottom_sheet));
         bottomSheetBehavior.setPeekHeight(0);
@@ -58,6 +59,8 @@ public class MapsFragment extends Fragment implements
                     itinerary.animate().scaleX(0).scaleY(0).setDuration(300).start();
                 } else if (BottomSheetBehavior.STATE_COLLAPSED == newState) {
                     itinerary.animate().scaleX(1).scaleY(1).setDuration(300).start();
+                } else if (BottomSheetBehavior.STATE_EXPANDED == newState) {
+
                 }
             }
 
@@ -73,6 +76,9 @@ public class MapsFragment extends Fragment implements
         ImageSliderAdapter imageSliderAdapter = new ImageSliderAdapter(getContext());
         viewPager.setAdapter(imageSliderAdapter);
 
+        //Listeners
+        view.findViewById(R.id.getBars).setOnClickListener(this);
+
         // Gets the MapView from the XML layout and creates it
         mapView = (MapView) view.findViewById(R.id.maps);
         mapView.onCreate(savedInstanceState);
@@ -87,13 +93,31 @@ public class MapsFragment extends Fragment implements
             ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
         }
 
-        view.findViewById(R.id.getBars).setOnClickListener(new View.OnClickListener() {
-            public void onClick(View v) {
-                new GetBarsAroundMe(Data.getLatitude(), Data.getLongitude(), Data.getRadiusInMeters(), map).execute();
-            }
-        });
-
         return view;
+    }
+
+    @Override
+    public void onResume() {
+        super.onResume();
+        mapView.onResume();
+    }
+
+    @Override
+    public void onPause() {
+        super.onPause();
+        mapView.onPause();
+    }
+
+    @Override
+    public void onDestroy() {
+        super.onDestroy();
+        mapView.onDestroy();
+    }
+
+    @Override
+    public void onLowMemory() {
+        super.onLowMemory();
+        mapView.onLowMemory();
     }
 
     /**************************************/
@@ -150,27 +174,12 @@ public class MapsFragment extends Fragment implements
     }
 
     @Override
-    public void onResume() {
-        super.onResume();
-        mapView.onResume();
-    }
-
-    @Override
-    public void onPause() {
-        super.onPause();
-        mapView.onPause();
-    }
-
-    @Override
-    public void onDestroy() {
-        super.onDestroy();
-        mapView.onDestroy();
-    }
-
-    @Override
-    public void onLowMemory() {
-        super.onLowMemory();
-        mapView.onLowMemory();
+    public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.getBars:
+                new GetBarsAroundMe(this.getContext(), Data.getLatitude(), Data.getLongitude(), Data.getRadiusInMeters(), map).execute();
+                break;
+        }
     }
 
     /**************************************/

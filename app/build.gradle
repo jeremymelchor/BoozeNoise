@@ -38,8 +38,8 @@ dependencies {
     // JSON parsing library
     compile 'com.google.code.gson:gson:2.6.2'
     // Material design
-    compile 'com.android.support:design:25.1.0'
-    compile 'com.android.support:appcompat-v7:25.1.0'
+    compile 'com.android.support:design:25.1.1'
+    compile 'com.android.support:appcompat-v7:25.1.1'
     compile 'com.android.support.constraint:constraint-layout:1.0.0-beta4'
 
     testCompile 'junit:junit:4.12'
