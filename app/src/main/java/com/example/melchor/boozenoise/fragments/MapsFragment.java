@@ -17,6 +17,7 @@ import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.RatingBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
@@ -202,21 +203,16 @@ public class MapsFragment extends Fragment implements
         bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56 + 94)));
         itinerary.setVisibility(View.VISIBLE);
 
-
         barSelected = (Bar) marker.getTag();
 
         // set bar name on bottom sheet peek
         TextView barName = (TextView) getView().findViewById(R.id.bottom_sheet_bar_name);
         barName.setText(barSelected.getName());
-        return false;
-    }
 
-    public static void setMargins (View v, int l, int t, int r, int b) {
-        if (v.getLayoutParams() instanceof ViewGroup.MarginLayoutParams) {
-            ViewGroup.MarginLayoutParams p = (ViewGroup.MarginLayoutParams) v.getLayoutParams();
-            p.setMargins(l, t, r, b);
-            v.requestLayout();
-        }
+        // set rating bar on bottom sheet peek
+        RatingBar ratingBar = (RatingBar) getView().findViewById(R.id.ratingBar);
+        ratingBar.setRating(barSelected.getRating());
+        return false;
     }
 
     @Override

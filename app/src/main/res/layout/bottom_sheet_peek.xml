@@ -11,6 +11,7 @@
         android:layout_marginStart="16dp"
         android:layout_marginTop="5dp"
         android:text="Bar Name"
+        android:maxLines="1"
         android:textSize="24sp"
         app:layout_constraintLeft_toLeftOf="parent"
         app:layout_constraintTop_toTopOf="parent" />
@@ -20,10 +21,9 @@
         style="?android:attr/ratingBarStyleSmall"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:isIndicator="false"
+        android:isIndicator="true"
         android:numStars="5"
-        android:rating="3.5"
-        android:stepSize="0.5"
+        android:stepSize="0.1"
         app:layout_constraintLeft_toLeftOf="@+id/bottom_sheet_bar_name"
         app:layout_constraintTop_toBottomOf="@+id/bottom_sheet_bar_name" />
 
