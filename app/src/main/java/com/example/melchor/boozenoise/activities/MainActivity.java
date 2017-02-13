@@ -1,11 +1,10 @@
 package com.example.melchor.boozenoise.activities;
 
-import android.app.Activity;
-import android.app.Fragment;
-import android.app.FragmentTransaction;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomNavigationView;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.AppCompatActivity;
 import android.view.MenuItem;
 
@@ -36,7 +35,7 @@ public class MainActivity extends AppCompatActivity {
         FirebaseApp.initializeApp(this);
 
         // Add all fragments and set maps fragment visibility
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.fragment_container, userProfileFragment);
         fragmentTransaction.add(R.id.fragment_container, mapsFragment);
         fragmentTransaction.add(R.id.fragment_container, soundRecordFragment);
@@ -76,7 +75,7 @@ public class MainActivity extends AppCompatActivity {
      * @param fragment_to_show
      */
     public void setFragment(Fragment fragment_to_show) {
-        FragmentTransaction fragmentTransaction = getFragmentManager().beginTransaction();
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
 
         if (fragment_to_show == userProfileFragment) {
             fragmentTransaction.hide(mapsFragment);

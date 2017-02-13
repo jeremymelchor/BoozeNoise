@@ -1,7 +1,6 @@
 package com.example.melchor.boozenoise.fragments;
 
 
-import android.app.Fragment;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.location.Criteria;
@@ -11,8 +10,10 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.support.annotation.NonNull;
 import android.support.design.widget.BottomSheetBehavior;
+import android.support.design.widget.BottomSheetDialogFragment;
 import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
+import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -93,7 +94,7 @@ public class MapsFragment extends Fragment implements
             }
         });*/
 
-        getBars = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.getBars);
+        getBars = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.get_bars);
 
 
 
@@ -109,7 +110,8 @@ public class MapsFragment extends Fragment implements
         viewPager.setAdapter(imageSliderAdapter);
 
         //Listeners
-        view.findViewById(R.id.getBars).setOnClickListener(this);
+        view.findViewById(R.id.get_bars).setOnClickListener(this);
+        view.findViewById(R.id.param).setOnClickListener(this);
         itinerary.setOnClickListener(this);
 
         // Gets the MapView from the XML layout and creates it
@@ -218,7 +220,7 @@ public class MapsFragment extends Fragment implements
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
-            case R.id.getBars:
+            case R.id.get_bars:
                 new GetBarsAroundMe(this.getContext(), Data.getLatitude(), Data.getLongitude(), Data.getRadiusInMeters(), map).execute();
                 break;
             case R.id.itinerary:
@@ -226,6 +228,9 @@ public class MapsFragment extends Fragment implements
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapsUri);
                 startActivity(mapIntent);
                 break;
+            case R.id.param:
+                BottomSheetDialogFragment bottomSheetDialogFragment = new BarsFetchParamFragment();
+                bottomSheetDialogFragment.show(getFragmentManager(), bottomSheetDialogFragment.getTag());
         }
     }
 
