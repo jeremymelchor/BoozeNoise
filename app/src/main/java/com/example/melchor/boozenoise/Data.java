@@ -3,6 +3,9 @@ package com.example.melchor.boozenoise;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
+import java.net.MalformedURLException;
+import java.net.URL;
+
 public class Data {
 
     private static final int SAMPLE_DELAY = 2000;
@@ -73,6 +76,7 @@ public class Data {
                 + "&type=bar"
                 + "&key=" + KEY;
         if (openNow) barsAroundMeUrl += "&opennow";
+
         return barsAroundMeUrl;
     }
 

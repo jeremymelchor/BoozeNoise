@@ -40,6 +40,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
@@ -245,15 +247,19 @@ public class MapsFragment extends Fragment implements
     }
 
     @Override
-    public void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException {
+    public void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException, MalformedURLException {
         Log.d(TAG, "response : " + response);
         Gson gson = new GsonBuilder().create();
         ListBars listBars = gson.fromJson(response.toString(), ListBars.class);
         pendingListBar.addAll(listBars.getResultsFromWebservice());
         Log.d(TAG, pendingListBar.toString());
         if (response.has("next_page_token")) {
-            String url = Data.getBarsAroundMeUrl() + "&pagetoken=" + URLEncoder.encode(response.getString("next_page_token"), "UTF-8");
-            new HttpRequest(getContext(), this).GET(url);
+            Log.d(TAG,response.getString("next_page_token"));
+            String url = Data.getBarsAroundMeUrl() + "&pagetoken=";
+            String next_token = response.getString("next_page_token");
+            String url2 = url + next_token;
+            Log.d(TAG,url2);
+            new HttpRequest(getContext(), this).GET(url2);
         }
     }
 

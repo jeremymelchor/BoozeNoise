@@ -16,6 +16,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 public class HttpRequest implements Response.ErrorListener, Response.Listener<JSONObject> {
 
@@ -29,7 +31,7 @@ public class HttpRequest implements Response.ErrorListener, Response.Listener<JS
     }
 
     public void GET(String url) {
-        Log.d(TAG,"url : "+url);
+        //Log.d(TAG,"url : "+url);
         RequestQueue queue = Volley.newRequestQueue(context);
         JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
         queue.add(request);
@@ -48,7 +50,7 @@ public class HttpRequest implements Response.ErrorListener, Response.Listener<JS
     public void onResponse(JSONObject response) {
         try {
             listener.onGET(response);
-        } catch (JSONException | UnsupportedEncodingException e) {
+        } catch (JSONException | UnsupportedEncodingException | MalformedURLException e) {
             e.printStackTrace();
         }
     }
@@ -58,6 +60,6 @@ public class HttpRequest implements Response.ErrorListener, Response.Listener<JS
     //==============================================================================================
 
     public interface HttpRequestListener {
-        void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException;
+        void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException, MalformedURLException;
     }
 }
