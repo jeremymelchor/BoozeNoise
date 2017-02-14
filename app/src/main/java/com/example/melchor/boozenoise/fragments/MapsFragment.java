@@ -15,30 +15,43 @@ import android.support.design.widget.FloatingActionButton;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.view.ViewPager;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RatingBar;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.example.melchor.boozenoise.Data;
+import com.example.melchor.boozenoise.HttpRequest;
 import com.example.melchor.boozenoise.R;
-import com.example.melchor.boozenoise.asynctasks.GetBarsAroundMe;
 import com.example.melchor.boozenoise.entities.Bar;
+import com.example.melchor.boozenoise.entities.ListBars;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+import java.util.ArrayList;
 
 import static android.content.Context.LOCATION_SERVICE;
 
 public class MapsFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
-        View.OnClickListener {
+        View.OnClickListener,
+        HttpRequest.HttpRequestListener {
+
+    private final String TAG = MapsFragment.class.getName();
 
     private MapView mapView;
     private GoogleMap map;
@@ -48,6 +61,9 @@ public class MapsFragment extends Fragment implements
     private com.getbase.floatingactionbutton.FloatingActionButton getBars;
 
     private Bar barSelected;
+
+    // Http request variables
+    private ArrayList<Bar> pendingListBar;
 
     //==============================================================================================
     // Lifecycle
@@ -95,11 +111,6 @@ public class MapsFragment extends Fragment implements
         });*/
 
         getBars = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.get_bars);
-
-
-
-
-
 
 
         itinerary = (FloatingActionButton) view.findViewById(R.id.itinerary);
@@ -164,8 +175,7 @@ public class MapsFragment extends Fragment implements
                 && ActivityCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.ACCESS_COARSE_LOCATION) != PackageManager.PERMISSION_GRANTED) {
             String[] permissions = new String[]{android.Manifest.permission.ACCESS_COARSE_LOCATION, android.Manifest.permission.ACCESS_FINE_LOCATION};
             ActivityCompat.requestPermissions(this.getActivity(), permissions, PackageManager.PERMISSION_GRANTED);
-        }
-        else {
+        } else {
             this.map = googleMap;
             map.setMyLocationEnabled(true);
 
@@ -201,8 +211,7 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public boolean onMarkerClick(Marker marker) {
-        // 56 because it's the height of the bottom bar navigation
-        bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(56 + 94)));
+        bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(94)));
         itinerary.setVisibility(View.VISIBLE);
 
         barSelected = (Bar) marker.getTag();
@@ -221,10 +230,11 @@ public class MapsFragment extends Fragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_bars:
-                new GetBarsAroundMe(this.getContext(), Data.getLatitude(), Data.getLongitude(), Data.getRadiusInMeters(), map).execute();
+                pendingListBar = new ArrayList<>();
+                new HttpRequest(getContext(), this).GET(Data.getBarsAroundMeUrl());
                 break;
             case R.id.itinerary:
-                Uri googleMapsUri = Uri.parse("google.navigation:q="+barSelected.getVicinity());
+                Uri googleMapsUri = Uri.parse("google.navigation:q=" + barSelected.getVicinity());
                 Intent mapIntent = new Intent(Intent.ACTION_VIEW, googleMapsUri);
                 startActivity(mapIntent);
                 break;
@@ -234,7 +244,21 @@ public class MapsFragment extends Fragment implements
         }
     }
 
+    @Override
+    public void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException {
+        Log.d(TAG, "response : " + response);
+        Gson gson = new GsonBuilder().create();
+        ListBars listBars = gson.fromJson(response.toString(), ListBars.class);
+        pendingListBar.addAll(listBars.getResultsFromWebservice());
+        Log.d(TAG, pendingListBar.toString());
+        if (response.has("next_page_token")) {
+            String url = Data.getBarsAroundMeUrl() + "&pagetoken=" + URLEncoder.encode(response.getString("next_page_token"), "UTF-8");
+            new HttpRequest(getContext(), this).GET(url);
+        }
+    }
+
     //==============================================================================================
     // Utils functions
     //==============================================================================================
+
 }

@@ -3,8 +3,6 @@ package com.example.melchor.boozenoise;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
-import static java.security.AccessController.getContext;
-
 public class Data {
 
     private static final int SAMPLE_DELAY = 2000;
@@ -14,6 +12,7 @@ public class Data {
 
     private static double latitude, longitude;
     private static int radiusInMeters = 1000;
+    private static boolean openNow = false;
 
     public Data() {
         super();
@@ -57,6 +56,24 @@ public class Data {
 
     public static String getKEY() {
         return KEY;
+    }
+
+    public static boolean isOpenNow() {
+        return openNow;
+    }
+
+    public static void setOpenNow(boolean openNow) {
+        Data.openNow = openNow;
+    }
+
+    public static String getBarsAroundMeUrl() {
+        String barsAroundMeUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
+                + "location=" + latitude + ',' + longitude
+                + "&radius=" + radiusInMeters
+                + "&type=bar"
+                + "&key=" + KEY;
+        if (openNow) barsAroundMeUrl += "&opennow";
+        return barsAroundMeUrl;
     }
 
     public static float dpToPx(int dp) {

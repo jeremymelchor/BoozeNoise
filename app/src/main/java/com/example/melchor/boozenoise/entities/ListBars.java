@@ -15,6 +15,10 @@ public class ListBars {
         return resultsFromWebservice;
     }
 
+    public void setResultsFromWebservice(ArrayList<Bar> resultsFromWebservice) {
+        this.resultsFromWebservice = resultsFromWebservice;
+    }
+
     public String getStatus() { return status; }
 
 

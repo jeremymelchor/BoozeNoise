@@ -2,6 +2,7 @@ package com.example.melchor.boozenoise.asynctasks;
 
 import android.app.Activity;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.widget.ArrayAdapter;
 import android.widget.ListView;
@@ -20,30 +21,29 @@ public class GetCurrentBar extends AsyncTask<Void, Void, ListBars> {
     private final int RADIUS_IN_METERS = 50;
     private final OnBarsFetchedListener listener;
 
-    private Activity activity;
+    private Context context;
     private ProgressDialog progressDialog;
 
-    public GetCurrentBar(OnBarsFetchedListener listener, Activity activity) {
+    public GetCurrentBar(OnBarsFetchedListener listener, Context context) {
         super();
         this.listener = listener;
-        this.activity = activity;
+        this.context = context;
     }
 
     @Override
     protected void onPreExecute() {
-        if (activity != null) {
-            progressDialog = new ProgressDialog(activity);
-            progressDialog.setMessage("Loading...");
-            progressDialog.setIndeterminate(false);
-            progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
-            progressDialog.setCancelable(true);
-            progressDialog.show();
-        }
+        progressDialog = new ProgressDialog(context);
+        progressDialog.setMessage("Loading...");
+        progressDialog.setIndeterminate(false);
+        progressDialog.setProgressStyle(ProgressDialog.STYLE_SPINNER);
+        progressDialog.setCancelable(true);
+        progressDialog.show();
+
     }
 
     @Override
     protected ListBars doInBackground(Void... voids) {
-        HttpHandler httpHandler = new HttpHandler();
+        //HttpHandler httpHandler = new HttpHandler();
 
         String url = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
                 + "location=" + Data.getLatitude() + ',' + Data.getLongitude()
@@ -52,25 +52,18 @@ public class GetCurrentBar extends AsyncTask<Void, Void, ListBars> {
                 + "&key=" + Data.getKEY();
 
         // Making a request to url and getting response
-        String jsonStr = httpHandler.makeServiceCall(url);
+        //String jsonStr = httpHandler.makeServiceCall(url);
 
         Gson gson = new GsonBuilder().create();
 
-        return gson.fromJson(jsonStr, ListBars.class);
+        return null;//gson.fromJson(jsonStr, ListBars.class);
     }
 
     protected void onPostExecute(ListBars listBars) {
-        /*ArrayList<Bar> list = new ArrayList<>();
 
-        for (Bar bar : listBars.getResultsFromWebservice())
-            list.add(bar);*/
+        listener.onBarsFetched(listBars);
+        progressDialog.dismiss();
 
-        if (listener != null) listener.onBarsFetched(listBars);
-        if (progressDialog != null) progressDialog.dismiss();
-        /*if (activity != null && listView != null) {
-            ArrayAdapter arrayAdapter = new ArrayAdapter<>(activity, android.R.layout.simple_list_item_1, list);
-            listView.setAdapter(arrayAdapter);
-        }*/
     }
 
     public interface OnBarsFetchedListener {

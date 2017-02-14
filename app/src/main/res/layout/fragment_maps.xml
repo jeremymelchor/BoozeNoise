@@ -23,8 +23,6 @@
         android:id="@+id/getBars"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_marginBottom="56dp"
-        android:layout_marginEnd="16dp"
         fab:fab_colorNormal="@color/colorPrimary"
         fab:fab_icon="@drawable/ic_bar"
         fab:fab_title="Action A"
