@@ -4,8 +4,13 @@ import android.os.AsyncTask;
 
 import com.example.melchor.boozenoise.entities.Bar;
 import com.example.melchor.boozenoise.entities.ListBars;
+import com.google.firebase.database.DataSnapshot;
+import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
 import com.google.firebase.database.FirebaseDatabase;
+import com.google.firebase.database.MutableData;
+import com.google.firebase.database.Transaction;
+import com.google.firebase.database.ValueEventListener;
 
 import java.util.HashMap;
 import java.util.Map;
@@ -50,9 +55,38 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
      */
     private void writeToDatabase(ListBars listBars) {
         for (Bar bar : listBars.getResultsFromWebservice()) {
+
+           /* databaseReference.child(bar.getPlace_id()).addListenerForSingleValueEvent(new ValueEventListener() {
+                @Override
+                public void onDataChange(DataSnapshot dataSnapshot) {
+                    if (dataSnapshot.exists()) {
+                        // Bar already exist
+                    }
+                    else {
+                        // Bar doesn't exist yet
+                        Map<String,Object> barEntry = new HashMap<>();
+                        barEntry.put(bar.getPlace_id(),)
+                    }
+                }
+
+                @Override
+                public void onCancelled(DatabaseError databaseError) {
+                }
+            });*/
             Map<String, Object> updates = new HashMap<>();
-            updates.put(bar.getPlace_id(), bar);
-            databaseReference.updateChildren(updates);
+            updates.put("geometry", bar.getGeometry());
+            updates.put("name", bar.getName());
+            updates.put("photos", bar.getPhotos());
+            updates.put("place_id", bar.getPlace_id());
+            updates.put("rating", bar.getRating());
+            updates.put("vicinity", bar.getVicinity());
+
+            databaseReference.child(bar.getPlace_id()).setValue(updates);
+
+            /*Map<String,Object> childUpdate = new HashMap<>();
+            childUpdate.put(bar.getPlace_id(),updates);
+            databaseReference.updateChildren(childUpdate);
+            databaseReference.child(bar.getPlace_id()).child("decibels").setValue(0);*/
         }
     }
 

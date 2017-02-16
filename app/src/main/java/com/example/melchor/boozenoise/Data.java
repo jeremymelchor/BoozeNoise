@@ -69,15 +69,12 @@ public class Data {
         Data.openNow = openNow;
     }
 
-    public static String getBarsAroundMeUrl() {
-        String barsAroundMeUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
-                + "location=" + latitude + ',' + longitude
-                + "&radius=" + radiusInMeters
-                + "&type=bar"
-                + "&key=" + KEY;
-        if (openNow) barsAroundMeUrl += "&opennow";
+    //==============================================================================================
+    // Utils
+    //==============================================================================================
 
-        return barsAroundMeUrl;
+    public static String getBarsAroundMeUrl() {
+        return "https://boozenoise-admin.herokuapp.com/api/nearbysearch";
     }
 
     public static float dpToPx(int dp) {
