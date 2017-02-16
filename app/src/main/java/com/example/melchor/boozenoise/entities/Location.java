@@ -17,6 +17,19 @@ public class Location implements Parcelable {
     public double getLatitude() { return latitude; }
     public double getLongitude() { return longitude; }
 
+    public void setLatitude(double latitude) {
+        this.latitude = latitude;
+    }
+
+    public void setLongitude(double longitude) {
+        this.longitude = longitude;
+    }
+
+    public Location(double latitude, double longitude) {
+        this.latitude = latitude;
+        this.longitude = longitude;
+    }
+
     @Override
     public String toString() {
         return "[latitude : "+ latitude +",longitude : "+ longitude +"]";
@@ -26,7 +39,7 @@ public class Location implements Parcelable {
     // Parcelable implementation
     //==============================================================================================
 
-    protected Location(Parcel in) {
+    public Location(Parcel in) {
         latitude = in.readDouble();
         longitude = in.readDouble();
     }

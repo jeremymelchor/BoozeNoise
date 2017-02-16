@@ -47,6 +47,34 @@ public class Bar implements Parcelable {
 
     public double getDecibels() { return decibels; }
 
+    public void setPlace_id(String place_id) {
+        this.place_id = place_id;
+    }
+
+    public void setName(String name) {
+        this.name = name;
+    }
+
+    public void setRating(float rating) {
+        this.rating = rating;
+    }
+
+    public void setVicinity(String vicinity) {
+        this.vicinity = vicinity;
+    }
+
+    public void setGeometry(Geometry geometry) {
+        this.geometry = geometry;
+    }
+
+    public void setDecibels(double decibels) {
+        this.decibels = decibels;
+    }
+
+    public void setListPhotos(ArrayList<Photo> listPhotos) {
+        this.listPhotos = listPhotos;
+    }
+
     @Override
     public String toString() {
         return "Bar{" +

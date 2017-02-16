@@ -3,8 +3,12 @@ package com.example.melchor.boozenoise;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
+import com.example.melchor.boozenoise.entities.Bar;
+import com.example.melchor.boozenoise.entities.ListBars;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Data {
 
@@ -16,6 +20,7 @@ public class Data {
     private static double latitude, longitude;
     private static int radiusInMeters = 1000;
     private static boolean openNow = false;
+    private static ArrayList<Bar> listBars;
 
     public Data() {
         super();
@@ -67,6 +72,14 @@ public class Data {
 
     public static void setOpenNow(boolean openNow) {
         Data.openNow = openNow;
+    }
+
+    public static ArrayList<Bar> getListBars() {
+        return listBars;
+    }
+
+    public static void setListBars(ArrayList<Bar> listBars) {
+        Data.listBars = listBars;
     }
 
     //==============================================================================================
