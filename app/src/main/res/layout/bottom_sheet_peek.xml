@@ -2,7 +2,7 @@
     xmlns:app="http://schemas.android.com/apk/res-auto"
     android:layout_width="match_parent"
     android:layout_height="94dp"
-    android:background="#FFF">
+    android:background="#673AB7">
 
     <TextView
         android:id="@+id/bottom_sheet_bar_name"
