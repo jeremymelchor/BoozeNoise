@@ -49,6 +49,7 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimary"
+            fab:fab_icon="@drawable/ic_bar"
             fab:fab_title="Action A" />
 
         <com.getbase.floatingactionbutton.FloatingActionButton
@@ -57,6 +58,8 @@
             android:layout_height="wrap_content"
             fab:fab_colorNormal="@color/colorPrimary"
             fab:fab_colorPressed="@color/colorPrimary"
+            fab:fab_icon="@drawable/ic_settings"
+
             fab:fab_title="Action with a very long name that won\'t fit on the screen" />
 
     </com.getbase.floatingactionbutton.FloatingActionsMenu>
