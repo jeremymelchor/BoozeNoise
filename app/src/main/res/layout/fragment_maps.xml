@@ -41,7 +41,7 @@
         app:layout_anchorGravity="top|center"
         fab:fab_addButtonColorNormal="@color/colorPrimary"
         fab:fab_addButtonColorPressed="@color/colorPrimary"
-        fab:fab_addButtonPlusIconColor="@color/colorAccent">
+        fab:fab_addButtonPlusIconColor="#ffffff">
 
         <com.getbase.floatingactionbutton.FloatingActionButton
             android:id="@+id/get_bars"
@@ -83,6 +83,7 @@
         android:src="@drawable/ic_itinerary"
         app:fabSize="normal"
         app:layout_anchor="@+id/bottom_sheet"
-        app:layout_anchorGravity="top|end" />
+        app:layout_anchorGravity="top|end"
+        app:backgroundTint="@color/colorPrimaryDark"/>
 
 </android.support.design.widget.CoordinatorLayout>
