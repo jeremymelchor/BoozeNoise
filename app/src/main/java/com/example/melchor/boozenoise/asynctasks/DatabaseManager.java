@@ -63,10 +63,10 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Bar already exist
-                        Log.d(TAG, "BAR EXISTS" + bar.getName());
+                        //Log.d(TAG, "BAR EXISTS" + bar.getName());
                     } else {
                         // Bar doesn't exist yet
-                        Log.d(TAG, "BAR NOT EXISTS");
+                        //Log.d(TAG, "BAR NOT EXISTS");
                         databaseReference.child(bar.getPlace_id()).setValue(bar);
                     }
                 }
