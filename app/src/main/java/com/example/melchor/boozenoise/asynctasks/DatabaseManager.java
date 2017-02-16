@@ -1,6 +1,7 @@
 package com.example.melchor.boozenoise.asynctasks;
 
 import android.os.AsyncTask;
+import android.util.Log;
 
 import com.example.melchor.boozenoise.entities.Bar;
 import com.example.melchor.boozenoise.entities.ListBars;
@@ -51,53 +52,41 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
 
     /**
      * put all bars in listBars#getResultsFromWebService in the DB
+     *
      * @param listBars Object containing all bars found
      */
     private void writeToDatabase(ListBars listBars) {
-        for (Bar bar : listBars.getResultsFromWebservice()) {
+        for (final Bar bar : listBars.getResultsFromWebservice()) {
 
-           /* databaseReference.child(bar.getPlace_id()).addListenerForSingleValueEvent(new ValueEventListener() {
+            databaseReference.child(bar.getPlace_id()).addListenerForSingleValueEvent(new ValueEventListener() {
                 @Override
                 public void onDataChange(DataSnapshot dataSnapshot) {
                     if (dataSnapshot.exists()) {
                         // Bar already exist
-                    }
-                    else {
+                        Log.d(TAG, "BAR EXISTS" + bar.getName());
+                    } else {
                         // Bar doesn't exist yet
-                        Map<String,Object> barEntry = new HashMap<>();
-                        barEntry.put(bar.getPlace_id(),)
+                        Log.d(TAG, "BAR NOT EXISTS");
+                        databaseReference.child(bar.getPlace_id()).setValue(bar);
                     }
                 }
 
                 @Override
                 public void onCancelled(DatabaseError databaseError) {
                 }
-            });*/
-            Map<String, Object> updates = new HashMap<>();
-            updates.put("geometry", bar.getGeometry());
-            updates.put("name", bar.getName());
-            updates.put("photos", bar.getPhotos());
-            updates.put("place_id", bar.getPlace_id());
-            updates.put("rating", bar.getRating());
-            updates.put("vicinity", bar.getVicinity());
-
-            databaseReference.child(bar.getPlace_id()).setValue(updates);
-
-            /*Map<String,Object> childUpdate = new HashMap<>();
-            childUpdate.put(bar.getPlace_id(),updates);
-            databaseReference.updateChildren(childUpdate);
-            databaseReference.child(bar.getPlace_id()).child("decibels").setValue(0);*/
+            });
         }
     }
 
     /**
      * Update a bar with its recorded decibels
-     * @param bar bar to update (found with place_id)
+     *
+     * @param bar     bar to update (found with place_id)
      * @param decibel number of recorded decibels
      */
     private void updateBarDecibels(Bar bar, double decibel) {
-        Map<String,Object> update = new HashMap<>();
-        update.put("decibels",decibel);
+        Map<String, Object> update = new HashMap<>();
+        update.put("decibels", decibel);
         databaseReference.child(bar.getPlace_id()).updateChildren(update);
     }
 }
