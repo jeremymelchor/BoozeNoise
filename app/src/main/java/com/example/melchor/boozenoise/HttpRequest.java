@@ -40,6 +40,7 @@ public class HttpRequest {
             jsonBody.put("latitude",Data.getLatitude());
             jsonBody.put("longitude",Data.getLongitude());
             jsonBody.put("radius",radius);
+            if (Data.isOpenNow()) jsonBody.put("opennow",Data.isOpenNow());
         } catch (JSONException e) {
             e.printStackTrace();
         }

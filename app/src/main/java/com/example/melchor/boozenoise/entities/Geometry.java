@@ -7,6 +7,10 @@ public class Geometry implements Parcelable {
 
     private Location location;
 
+    public Geometry(Location location) {
+        this.location = location;
+    }
+
     public Location getLocation() { return location; }
 
     @Override

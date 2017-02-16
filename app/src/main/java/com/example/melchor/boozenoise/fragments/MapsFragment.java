@@ -265,8 +265,8 @@ public class MapsFragment extends Fragment implements
         final ListBars listBars = new ListBars();
         listBars.setResultsFromWebservice(pendingListBar);
         // Persist bars found
-       /* DatabaseManager databaseManager = new DatabaseManager("write");
-        databaseManager.execute(listBars);*/
+        DatabaseManager databaseManager = new DatabaseManager("write");
+        databaseManager.execute(listBars);
 
         for (int i = 0; i < listBars.getResultsFromWebservice().size(); i++) {
             if (i < 20) {
