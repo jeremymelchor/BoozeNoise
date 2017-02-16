@@ -33,13 +33,13 @@ public class HttpRequest {
         this.listener = listener;
     }
 
-    public void getBarsAroundMe() {
+    public void getBarsAroundMe(int radius) {
         RequestQueue queue = Volley.newRequestQueue(context);
         JSONObject jsonBody = new JSONObject();
         try {
             jsonBody.put("latitude",Data.getLatitude());
             jsonBody.put("longitude",Data.getLongitude());
-            jsonBody.put("radius",Data.getRadiusInMeters());
+            jsonBody.put("radius",radius);
         } catch (JSONException e) {
             e.printStackTrace();
         }

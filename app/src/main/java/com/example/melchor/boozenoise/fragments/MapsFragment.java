@@ -72,9 +72,6 @@ public class MapsFragment extends Fragment implements
 
     private Bar barSelected;
 
-    // Http request variables
-    private ArrayList<Bar> pendingListBar;
-
     //==============================================================================================
     // Lifecycle
     //==============================================================================================
@@ -240,7 +237,7 @@ public class MapsFragment extends Fragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_bars:
-                new HttpRequest(getContext(), this).getBarsAroundMe();
+                new HttpRequest(getContext(), this).getBarsAroundMe(Data.getRadiusInMeters());
                 break;
             case R.id.itinerary:
                 Uri googleMapsUri = Uri.parse("google.navigation:q=" + barSelected.getVicinity());
@@ -255,34 +252,35 @@ public class MapsFragment extends Fragment implements
 
     @Override
     public void onBarsAroundMeFetched(JSONArray response) throws JSONException {
-        Log.d(TAG,"response : "+response);
+        Log.d(TAG, "response : " + response);
         ArrayList<Bar> pendingListBar = new ArrayList<>();
 
         // create all Bar objects with webservice response
-        for (int i=0; i< response.length(); i++) {
+        for (int i = 0; i < response.length(); i++) {
             Gson gson = new GsonBuilder().create();
             ListBars listBars = gson.fromJson(response.get(i).toString(), ListBars.class);
             pendingListBar.addAll(listBars.getResultsFromWebservice());
         }
 
-        ListBars listBars = new ListBars();
+        final ListBars listBars = new ListBars();
         listBars.setResultsFromWebservice(pendingListBar);
         // Persist bars found
-        DatabaseManager databaseManager = new DatabaseManager("write");
-        databaseManager.execute(listBars);
+       /* DatabaseManager databaseManager = new DatabaseManager("write");
+        databaseManager.execute(listBars);*/
 
-        // Update map
-        for (Bar bar : listBars.getResultsFromWebservice()) {
-            double decibel = bar.getDecibels();
-            double latitude = bar.getGeometry().getLocation().getLatitude();
-            double longitude = bar.getGeometry().getLocation().getLongitude();
-            LatLng latLng = new LatLng(latitude, longitude);
+        for (int i = 0; i < listBars.getResultsFromWebservice().size(); i++) {
+            if (i < 20) {
+                double decibel = listBars.getResultsFromWebservice().get(i).getDecibels();
+                double latitude = listBars.getResultsFromWebservice().get(i).getGeometry().getLocation().getLatitude();
+                double longitude = listBars.getResultsFromWebservice().get(i).getGeometry().getLocation().getLongitude();
+                LatLng latLng = new LatLng(latitude, longitude);
 
-            MarkerOptions marker = new MarkerOptions()
-                    .position(latLng)
-                    /*.icon(getMarkerIcon(decibel))*/;
+                MarkerOptions marker = new MarkerOptions()
+                        .position(latLng)
+                        .icon(getMarkerIcon(decibel));
 
-            map.addMarker(marker).setTag(bar);
+                map.addMarker(marker).setTag(listBars.getResultsFromWebservice().get(i));
+            }
         }
     }
 
