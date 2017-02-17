@@ -14,6 +14,9 @@ import com.example.melchor.boozenoise.fragments.SoundRecordFragment;
 import com.example.melchor.boozenoise.fragments.UserProfileFragment;
 import com.google.firebase.FirebaseApp;
 
+/**
+ * Main Activity: Handles the different fragments
+ */
 public class MainActivity extends AppCompatActivity {
 
     private static final String TAG = MainActivity.class.getSimpleName();

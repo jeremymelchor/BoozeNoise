@@ -19,6 +19,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * Activity to register to the application
+ */
 public class signUpActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
@@ -37,6 +40,7 @@ public class signUpActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
 
+        //dynamic password check
         password.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -56,6 +60,7 @@ public class signUpActivity extends AppCompatActivity {
             }
         });
 
+        //firebase connection
         auth = FirebaseAuth.getInstance();
         authListener = new FirebaseAuth.AuthStateListener() {
 
@@ -88,6 +93,10 @@ public class signUpActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * If the informations provided are correct, the user is registered with his email and password
+     * @param view
+     */
     public void signUp(View view) {
         String email = this.email.getText().toString();
         String password = this.password.getText().toString();

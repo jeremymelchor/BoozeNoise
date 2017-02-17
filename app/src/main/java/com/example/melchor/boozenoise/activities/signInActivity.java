@@ -19,6 +19,9 @@ import com.google.firebase.auth.AuthResult;
 import com.google.firebase.auth.FirebaseAuth;
 import com.google.firebase.auth.FirebaseUser;
 
+/**
+ * Acitivity to connect to the application
+ */
 public class signInActivity extends AppCompatActivity {
 
     private FirebaseAuth auth;
@@ -37,6 +40,7 @@ public class signInActivity extends AppCompatActivity {
         email = (EditText) findViewById(R.id.email);
         password = (EditText) findViewById(R.id.password);
 
+        //dynamic password verification
         password.addTextChangedListener(new TextWatcher() {
 
             @Override
@@ -56,6 +60,7 @@ public class signInActivity extends AppCompatActivity {
             }
         });
 
+        //connection to Firebase to sign the user
         auth = FirebaseAuth.getInstance();
 
         authListener = new FirebaseAuth.AuthStateListener() {
@@ -87,6 +92,10 @@ public class signInActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Method to ask Firebase if the user is registered or not
+     * @param view
+     */
     public void signIn(View view) {
         String email = this.email.getText().toString();
         String password = this.password.getText().toString();
@@ -118,6 +127,10 @@ public class signInActivity extends AppCompatActivity {
         }
     }
 
+    /**
+     * Launch SignUp activity
+     * @param view
+     */
     public void signUp(View view) {
         Intent intent = new Intent(this, signUpActivity.class);
         startActivity(intent);
