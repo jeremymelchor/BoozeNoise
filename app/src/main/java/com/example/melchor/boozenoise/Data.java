@@ -3,8 +3,12 @@ package com.example.melchor.boozenoise;
 import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
+import com.example.melchor.boozenoise.entities.Bar;
+import com.example.melchor.boozenoise.entities.ListBars;
+
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
 
 public class Data {
 
@@ -16,6 +20,7 @@ public class Data {
     private static double latitude, longitude;
     private static int radiusInMeters = 1000;
     private static boolean openNow = false;
+    private static ArrayList<Bar> listBars;
 
     public Data() {
         super();
@@ -69,15 +74,20 @@ public class Data {
         Data.openNow = openNow;
     }
 
-    public static String getBarsAroundMeUrl() {
-        String barsAroundMeUrl = "https://maps.googleapis.com/maps/api/place/nearbysearch/json?"
-                + "location=" + latitude + ',' + longitude
-                + "&radius=" + radiusInMeters
-                + "&type=bar"
-                + "&key=" + KEY;
-        if (openNow) barsAroundMeUrl += "&opennow";
+    public static ArrayList<Bar> getListBars() {
+        return listBars;
+    }
 
-        return barsAroundMeUrl;
+    public static void setListBars(ArrayList<Bar> listBars) {
+        Data.listBars = listBars;
+    }
+
+    //==============================================================================================
+    // Utils
+    //==============================================================================================
+
+    public static String getBarsAroundMeUrl() {
+        return "https://boozenoise-admin.herokuapp.com/api/nearbysearch";
     }
 
     public static float dpToPx(int dp) {

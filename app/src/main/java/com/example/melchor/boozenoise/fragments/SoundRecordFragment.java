@@ -1,10 +1,12 @@
 package com.example.melchor.boozenoise.fragments;
 
+import android.content.DialogInterface;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
+import android.support.v7.app.AlertDialog;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,6 +21,8 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.example.melchor.boozenoise.Data;
+import com.example.melchor.boozenoise.HttpRequest;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.activities.MainActivity;
 import com.example.melchor.boozenoise.asynctasks.GetCurrentBar;
@@ -26,14 +30,19 @@ import com.example.melchor.boozenoise.entities.Bar;
 import com.example.melchor.boozenoise.asynctasks.DatabaseManager;
 import com.example.melchor.boozenoise.asynctasks.SoundRecorder;
 import com.example.melchor.boozenoise.entities.ListBars;
+import com.google.gson.Gson;
+import com.google.gson.GsonBuilder;
+
+import org.json.JSONArray;
+import org.json.JSONException;
 
 import java.util.ArrayList;
 
 public class SoundRecordFragment extends Fragment implements
         AdapterView.OnItemClickListener,
         View.OnClickListener,
-        GetCurrentBar.OnBarsFetchedListener,
-        SoundRecorder.OnSoundRecordedListener {
+        SoundRecorder.OnSoundRecordedListener,
+        HttpRequest.HttpRequestListener {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -42,6 +51,8 @@ public class SoundRecordFragment extends Fragment implements
     private ListBars barsFetched;
     private TextView progress;
     private Button record, sendRecord;
+
+    ListBars listBars;
 
     @Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {
@@ -65,9 +76,7 @@ public class SoundRecordFragment extends Fragment implements
         record.setOnClickListener(this);
         sendRecord.setOnClickListener(this);
 
-        // Set initial elements state
         sendRecord.setVisibility(View.INVISIBLE);
-        listView.setVisibility(View.INVISIBLE);
 
         return view;
     }
@@ -94,7 +103,10 @@ public class SoundRecordFragment extends Fragment implements
 
     @Override
     public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        myBar = (Bar) adapterView.getAdapter().getItem(i);
+        for (Bar bar : listBars.getResultsFromWebservice()) {
+            if (bar.getName() == adapterView.getAdapter().getItem(i))
+                myBar = bar;
+        }
     }
 
     /**************************************/
@@ -105,15 +117,13 @@ public class SoundRecordFragment extends Fragment implements
     public void onClick(View view) {
         switch (view.getId()) {
             case R.id.sound_record_record:
-                Animation slideinAnimation = new TranslateAnimation(0.0f, 0.0f, 0.0f, -40);
-                slideinAnimation.setDuration(1000);
-                record.startAnimation(slideinAnimation);
-                //record.animate().alpha(0).setDuration(1000).start();
-                //new GetCurrentBar(this, getContext()).execute();
+                new HttpRequest(getContext(), this).getBarsAroundMe(50);
                 break;
             case R.id.sound_record_send_data:
                 DatabaseManager databaseManager = new DatabaseManager("update");
-                databaseManager.execute(myBar, (double) 10);
+                databaseManager.execute(myBar, Double.parseDouble(progress.getText().toString()));
+                sendRecord.setVisibility(View.INVISIBLE);
+                progress.setText("0");
                 break;
         }
     }
@@ -122,24 +132,8 @@ public class SoundRecordFragment extends Fragment implements
     // Listeners implementation
     //==============================================================================================
 
-    /**
-     * We launch the recorder only if there's at least 1 bar around us
-     * @param listBars fetched from GetCurrentBar
-     */
-    @Override
-    public void onBarsFetched(ListBars listBars) {
-        if (listBars.getResultsFromWebservice().isEmpty()) Log.d(TAG, "CANCEL BECAUSE 0 BARS");
-        else {
-            new SoundRecorder(this, progress).execute();
-            barsFetched = listBars;
-        }
-    }
-
     @Override
     public void onSoundRecorded() {
-        progress.animate().translationY(0).setDuration(1000).start();
-
-
         ArrayList<String> listDisplayed = new ArrayList<>();
 
         for (Bar bar : barsFetched.getResultsFromWebservice())
@@ -147,6 +141,29 @@ public class SoundRecordFragment extends Fragment implements
 
         ArrayAdapter arrayAdapter = new ArrayAdapter<>(getActivity(), android.R.layout.simple_list_item_1, listDisplayed);
         listView.setAdapter(arrayAdapter);
-        listView.setVisibility(View.VISIBLE);
+
+        sendRecord.setVisibility(View.VISIBLE);
+    }
+
+    @Override
+    public void onBarsAroundMeFetched(JSONArray response) throws JSONException {
+        Gson gson = new GsonBuilder().create();
+        listBars = gson.fromJson(response.get(0).toString(), ListBars.class);
+        if (listBars.getResultsFromWebservice().isEmpty()) {
+            AlertDialog alertDialog = new AlertDialog.Builder(getContext()).create();
+            alertDialog.setTitle("Oups !");
+            alertDialog.setMessage("Nous n'avons pas pu vous localiser dans un bar");
+            alertDialog.setButton(AlertDialog.BUTTON_NEUTRAL, "Ok",
+                    new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            dialog.dismiss();
+                        }
+                    });
+            alertDialog.show();
+        }
+        else {
+            new SoundRecorder(this, progress).execute();
+            barsFetched = listBars;
+        }
     }
 }

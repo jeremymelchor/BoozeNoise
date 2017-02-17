@@ -3,6 +3,8 @@ package com.example.melchor.boozenoise.fragments;
 
 import android.content.Intent;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.location.Criteria;
 import android.location.Location;
 import android.location.LocationManager;
@@ -25,17 +27,23 @@ import android.widget.TextView;
 import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.HttpRequest;
 import com.example.melchor.boozenoise.R;
+import com.example.melchor.boozenoise.asynctasks.DatabaseManager;
 import com.example.melchor.boozenoise.entities.Bar;
 import com.example.melchor.boozenoise.entities.ListBars;
 import com.google.android.gms.maps.CameraUpdateFactory;
 import com.google.android.gms.maps.GoogleMap;
 import com.google.android.gms.maps.MapView;
 import com.google.android.gms.maps.OnMapReadyCallback;
+import com.google.android.gms.maps.model.BitmapDescriptor;
+import com.google.android.gms.maps.model.BitmapDescriptorFactory;
 import com.google.android.gms.maps.model.LatLng;
 import com.google.android.gms.maps.model.Marker;
+import com.google.android.gms.maps.model.MarkerOptions;
 import com.google.gson.Gson;
 import com.google.gson.GsonBuilder;
+import com.google.gson.JsonObject;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -63,9 +71,6 @@ public class MapsFragment extends Fragment implements
     private com.getbase.floatingactionbutton.FloatingActionButton getBars;
 
     private Bar barSelected;
-
-    // Http request variables
-    private ArrayList<Bar> pendingListBar;
 
     //==============================================================================================
     // Lifecycle
@@ -232,8 +237,7 @@ public class MapsFragment extends Fragment implements
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_bars:
-                pendingListBar = new ArrayList<>();
-                new HttpRequest(getContext(), this).GET(Data.getBarsAroundMeUrl());
+                new HttpRequest(getContext(), this).getBarsAroundMe(Data.getRadiusInMeters());
                 break;
             case R.id.itinerary:
                 Uri googleMapsUri = Uri.parse("google.navigation:q=" + barSelected.getVicinity());
@@ -247,24 +251,56 @@ public class MapsFragment extends Fragment implements
     }
 
     @Override
-    public void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException, MalformedURLException {
+    public void onBarsAroundMeFetched(JSONArray response) throws JSONException {
         Log.d(TAG, "response : " + response);
-        Gson gson = new GsonBuilder().create();
-        ListBars listBars = gson.fromJson(response.toString(), ListBars.class);
-        pendingListBar.addAll(listBars.getResultsFromWebservice());
-        Log.d(TAG, pendingListBar.toString());
-        if (response.has("next_page_token")) {
-            Log.d(TAG,response.getString("next_page_token"));
-            String url = Data.getBarsAroundMeUrl() + "&pagetoken=";
-            String next_token = response.getString("next_page_token");
-            String url2 = url + next_token;
-            Log.d(TAG,url2);
-            new HttpRequest(getContext(), this).GET(url2);
+        ArrayList<Bar> pendingListBar = new ArrayList<>();
+
+        // create all Bar objects with webservice response
+        for (int i = 0; i < response.length(); i++) {
+            Gson gson = new GsonBuilder().create();
+            ListBars listBars = gson.fromJson(response.get(i).toString(), ListBars.class);
+            pendingListBar.addAll(listBars.getResultsFromWebservice());
+        }
+
+        final ListBars listBars = new ListBars();
+        listBars.setResultsFromWebservice(pendingListBar);
+        // Persist bars found
+        DatabaseManager databaseManager = new DatabaseManager("write");
+        databaseManager.execute(listBars);
+
+        for (int i = 0; i < listBars.getResultsFromWebservice().size(); i++) {
+            if (i < 20) {
+                double decibel = listBars.getResultsFromWebservice().get(i).getDecibels();
+                double latitude = listBars.getResultsFromWebservice().get(i).getGeometry().getLocation().getLatitude();
+                double longitude = listBars.getResultsFromWebservice().get(i).getGeometry().getLocation().getLongitude();
+                LatLng latLng = new LatLng(latitude, longitude);
+
+                MarkerOptions marker = new MarkerOptions()
+                        .position(latLng)
+                        .icon(getMarkerIcon(decibel));
+
+                map.addMarker(marker).setTag(listBars.getResultsFromWebservice().get(i));
+            }
         }
     }
+
 
     //==============================================================================================
     // Utils functions
     //==============================================================================================
+
+    private BitmapDescriptor getMarkerIcon(double decibel) {
+        Log.d(TAG, "decibel : " + decibel);
+        BitmapDrawable bitmapdraw;
+        if (decibel < 70)
+            bitmapdraw = (BitmapDrawable) getContext().getResources().getDrawable(R.drawable.sound_low, null);
+        else if (decibel >= 70 && decibel < 90)
+            bitmapdraw = (BitmapDrawable) getContext().getResources().getDrawable(R.drawable.sound_medium, null);
+        else
+            bitmapdraw = (BitmapDrawable) getContext().getResources().getDrawable(R.drawable.sound_loud, null);
+
+        Bitmap marker = Bitmap.createScaledBitmap(bitmapdraw.getBitmap(), 50, 50, false);
+        return BitmapDescriptorFactory.fromBitmap(marker);
+    }
 
 }

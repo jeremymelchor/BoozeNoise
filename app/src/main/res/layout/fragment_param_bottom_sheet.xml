@@ -16,7 +16,9 @@
             android:layout_height="wrap_content"
             android:elevation="1dp"
             android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+            android:paddingStart="16dp"
+            android:paddingBottom="32dp"
+            android:paddingTop="32dp">
 
             <TextView
                 android:id="@+id/param_radius_textview"
@@ -40,7 +42,9 @@
             android:layout_height="wrap_content"
             android:elevation="1dp"
             android:paddingEnd="16dp"
-            android:paddingStart="16dp">
+            android:paddingStart="16dp"
+            android:paddingBottom="32dp"
+            android:paddingTop="32dp">
 
             <TextView
                 android:id="@+id/param_opennow_textview"

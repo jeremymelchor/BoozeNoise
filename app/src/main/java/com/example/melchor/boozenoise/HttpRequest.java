@@ -1,25 +1,28 @@
 package com.example.melchor.boozenoise;
 
 
-
 import android.content.Context;
 import android.util.Log;
 
+import com.android.volley.DefaultRetryPolicy;
 import com.android.volley.Request;
 import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
+import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Map;
 
-public class HttpRequest implements Response.ErrorListener, Response.Listener<JSONObject> {
+public class HttpRequest {
 
     private final String TAG = HttpRequest.class.getName();
     private Context context;
@@ -30,10 +33,44 @@ public class HttpRequest implements Response.ErrorListener, Response.Listener<JS
         this.listener = listener;
     }
 
-    public void GET(String url) {
-        //Log.d(TAG,"url : "+url);
+    public void getBarsAroundMe(int radius) {
         RequestQueue queue = Volley.newRequestQueue(context);
-        JsonObjectRequest request = new JsonObjectRequest(Request.Method.GET, url, null, this, this);
+        JSONObject jsonBody = new JSONObject();
+        try {
+            jsonBody.put("latitude",Data.getLatitude());
+            jsonBody.put("longitude",Data.getLongitude());
+            jsonBody.put("radius",radius);
+            if (Data.isOpenNow()) jsonBody.put("opennow",Data.isOpenNow());
+        } catch (JSONException e) {
+            e.printStackTrace();
+        }
+
+        JsonObjectRequest request = new JsonObjectRequest(Request.Method.POST, Data.getBarsAroundMeUrl(), jsonBody,
+                new Response.Listener<JSONObject>() {
+
+                    @Override
+                    public void onResponse(JSONObject response) {
+                        try {
+                            listener.onBarsAroundMeFetched(response.getJSONArray("data"));
+                        } catch (JSONException e) {
+                            e.printStackTrace();
+                        }
+                    }
+                },
+                new Response.ErrorListener()
+
+                {
+                    @Override
+                    public void onErrorResponse(VolleyError error) {
+                        // error
+                        Log.d("Error.Response", error.toString());
+                    }
+                }
+
+        );
+        request.setRetryPolicy(new DefaultRetryPolicy(14000,
+                DefaultRetryPolicy.DEFAULT_MAX_RETRIES,
+                DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(request);
     }
 
@@ -41,25 +78,12 @@ public class HttpRequest implements Response.ErrorListener, Response.Listener<JS
     // Volley events implementation
     //==============================================================================================
 
-    @Override
-    public void onErrorResponse(VolleyError error) {
-
-    }
-
-    @Override
-    public void onResponse(JSONObject response) {
-        try {
-            listener.onGET(response);
-        } catch (JSONException | UnsupportedEncodingException | MalformedURLException e) {
-            e.printStackTrace();
-        }
-    }
 
     //==============================================================================================
     // Callback Interface
     //==============================================================================================
 
     public interface HttpRequestListener {
-        void onGET(JSONObject response) throws JSONException, UnsupportedEncodingException, MalformedURLException;
+        void onBarsAroundMeFetched(JSONArray response) throws JSONException;
     }
 }
