@@ -1,11 +1,11 @@
 # BoozeNoise
 
 ## Environnement de DEV:
-..* Mobile: Android Sudio
-... Tehcnologies : Firebase Authentification; Firebase Database
+⋅⋅* Mobile: Android Sudio
+⋅⋅⋅ Tehcnologies : Firebase Authentification; Firebase Database
 
-..* Backend: Jetbrains WebStorm
-... Technologies : Nodejs, Express, Firebase Admin, Firebase Database, Figues (librairie k-means).
+⋅⋅* Backend: Jetbrains WebStorm
+⋅⋅⋅ Technologies : Nodejs, Express, Firebase Admin, Firebase Database, Figues (librairie k-means).
 
 
 
