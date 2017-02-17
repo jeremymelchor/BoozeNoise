@@ -17,8 +17,11 @@
         android:icon="@mipmap/ic_launcher"
         android:label="BoozeNoise"
         android:supportsRtl="true">
-        <activity android:name=".activities.signUpActivity" />
-        <activity android:name=".activities.signInActivity" />
+        <activity android:name=".activities.signUpActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
+        <activity
+            android:name=".activities.signInActivity"
+            android:theme="@style/Theme.AppCompat.NoActionBar"/>
         <!--
              The API key for Google Maps-based APIs is defined as a string resource.
              (See the file "res/values/google_maps_api.xml").
