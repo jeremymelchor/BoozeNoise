@@ -59,7 +59,8 @@ public class MapsFragment extends Fragment implements
         OnMapReadyCallback,
         GoogleMap.OnMarkerClickListener,
         View.OnClickListener,
-        HttpRequest.HttpRequestListener {
+        HttpRequest.HttpRequestListener,
+        DatabaseManager.OnBarStored {
 
     private final String TAG = MapsFragment.class.getName();
 
@@ -103,20 +104,6 @@ public class MapsFragment extends Fragment implements
             }
         });
 
-
-
-        /*com.getbase.floatingactionbutton.FloatingActionButton actionC = new com.getbase.floatingactionbutton.FloatingActionButton(getContext());
-        actionC.setTitle("Hide/Show Action above");
-        final FloatingActionsMenu menuMultipleActions = (FloatingActionsMenu) view.findViewById(R.id.multiple_actions);
-        menuMultipleActions.addButton(actionC);
-        final com.getbase.floatingactionbutton.FloatingActionButton actionA = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.action_a);
-        actionA.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                actionA.setTitle("Action A clicked");
-            }
-        });*/
-
         getBars = (com.getbase.floatingactionbutton.FloatingActionButton) view.findViewById(R.id.get_bars);
 
 
@@ -143,6 +130,9 @@ public class MapsFragment extends Fragment implements
         return view;
     }
 
+    /**
+     * Check the permission for the location
+     */
     @Override
     public void onResume() {
         super.onResume();
@@ -176,6 +166,11 @@ public class MapsFragment extends Fragment implements
     // Events implementation
     //==============================================================================================
 
+    /**
+     * When the map is ready to be manipulated
+     *
+     * @param googleMap
+     */
     @Override
     public void onMapReady(GoogleMap googleMap) {
         if (ActivityCompat.checkSelfPermission(this.getContext(), android.Manifest.permission.ACCESS_FINE_LOCATION) != PackageManager.PERMISSION_GRANTED
@@ -216,6 +211,12 @@ public class MapsFragment extends Fragment implements
 
     }
 
+    /**
+     * Set information display when we click on a marker
+     *
+     * @param marker
+     * @return
+     */
     @Override
     public boolean onMarkerClick(Marker marker) {
         bottomSheetBehavior.setPeekHeight(Math.round(Data.dpToPx(94)));
@@ -230,14 +231,24 @@ public class MapsFragment extends Fragment implements
         // set rating bar on bottom sheet peek
         RatingBar ratingBar = (RatingBar) getView().findViewById(R.id.ratingBar);
         ratingBar.setRating(barSelected.getRating());
+
+        // set sound level on bottom sheet peek
+        TextView noise = (TextView) getView().findViewById(R.id.bottom_sheet_noise);
+        noise.setText(getBarsSoundLevel(barSelected.getDecibels()));
         return false;
     }
 
+    /**
+     * Click events
+     *
+     * @param v the view we clicked
+     */
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
             case R.id.get_bars:
                 new HttpRequest(getContext(), this).getBarsAroundMe(Data.getRadiusInMeters());
+                map.clear();
                 break;
             case R.id.itinerary:
                 Uri googleMapsUri = Uri.parse("google.navigation:q=" + barSelected.getVicinity());
@@ -250,9 +261,14 @@ public class MapsFragment extends Fragment implements
         }
     }
 
+    /**
+     * Fired when we fetched the bars around us
+     *
+     * @param response from the webservice
+     * @throws JSONException
+     */
     @Override
     public void onBarsAroundMeFetched(JSONArray response) throws JSONException {
-        Log.d(TAG, "response : " + response);
         ArrayList<Bar> pendingListBar = new ArrayList<>();
 
         // create all Bar objects with webservice response
@@ -265,22 +281,27 @@ public class MapsFragment extends Fragment implements
         final ListBars listBars = new ListBars();
         listBars.setResultsFromWebservice(pendingListBar);
         // Persist bars found
-        DatabaseManager databaseManager = new DatabaseManager("write");
+        DatabaseManager databaseManager = new DatabaseManager("write", this);
         databaseManager.execute(listBars);
+    }
 
-        for (int i = 0; i < listBars.getResultsFromWebservice().size(); i++) {
-            if (i < 20) {
-                double decibel = listBars.getResultsFromWebservice().get(i).getDecibels();
-                double latitude = listBars.getResultsFromWebservice().get(i).getGeometry().getLocation().getLatitude();
-                double longitude = listBars.getResultsFromWebservice().get(i).getGeometry().getLocation().getLongitude();
-                LatLng latLng = new LatLng(latitude, longitude);
+    /**
+     * When we updated the database, we retrieve the bars newly added and we
+     * fire this event so we can treat our datas. Here we put markers on the map
+     */
+    @Override
+    public void onBarStored() {
+        for (int i = 0; i < Data.getCurrentListBars().size(); i++) {
+            double decibel = Data.getCurrentListBars().get(i).getDecibels();
+            double latitude = Data.getCurrentListBars().get(i).getGeometry().getLocation().getLatitude();
+            double longitude = Data.getCurrentListBars().get(i).getGeometry().getLocation().getLongitude();
+            LatLng latLng = new LatLng(latitude, longitude);
 
-                MarkerOptions marker = new MarkerOptions()
-                        .position(latLng)
-                        .icon(getMarkerIcon(decibel));
+            MarkerOptions marker = new MarkerOptions()
+                    .position(latLng)
+                    .icon(getMarkerIcon(decibel));
 
-                map.addMarker(marker).setTag(listBars.getResultsFromWebservice().get(i));
-            }
+            map.addMarker(marker).setTag(Data.getCurrentListBars().get(i));
         }
     }
 
@@ -289,6 +310,12 @@ public class MapsFragment extends Fragment implements
     // Utils functions
     //==============================================================================================
 
+    /**
+     * Determine which icon we use for a merker depending on decibel
+     *
+     * @param decibel decibels of a bar
+     * @return a BitmapDescriptor describing the marker icon
+     */
     private BitmapDescriptor getMarkerIcon(double decibel) {
         Log.d(TAG, "decibel : " + decibel);
         BitmapDrawable bitmapdraw;
@@ -303,4 +330,15 @@ public class MapsFragment extends Fragment implements
         return BitmapDescriptorFactory.fromBitmap(marker);
     }
 
+    private String getBarsSoundLevel(double decibel) {
+        String result;
+        if (decibel < 70)
+            result = "Peu bruyant";
+        else if (decibel >= 70 && decibel < 90)
+            result = "Son modéré";
+        else
+            result = "très bruyant";
+
+        return result;
+    }
 }

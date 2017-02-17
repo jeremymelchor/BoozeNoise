@@ -10,17 +10,11 @@ import com.android.volley.RequestQueue;
 import com.android.volley.Response;
 import com.android.volley.VolleyError;
 import com.android.volley.toolbox.JsonObjectRequest;
-import com.android.volley.toolbox.StringRequest;
 import com.android.volley.toolbox.Volley;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import java.io.UnsupportedEncodingException;
-import java.net.MalformedURLException;
-import java.util.HashMap;
-import java.util.Map;
 
 public class HttpRequest {
 
@@ -33,6 +27,10 @@ public class HttpRequest {
         this.listener = listener;
     }
 
+    /**
+     * Send a POST request to the server to get the bars around us
+     * @param radius of searching
+     */
     public void getBarsAroundMe(int radius) {
         RequestQueue queue = Volley.newRequestQueue(context);
         JSONObject jsonBody = new JSONObject();
@@ -73,11 +71,6 @@ public class HttpRequest {
                 DefaultRetryPolicy.DEFAULT_BACKOFF_MULT));
         queue.add(request);
     }
-
-    //==============================================================================================
-    // Volley events implementation
-    //==============================================================================================
-
 
     //==============================================================================================
     // Callback Interface

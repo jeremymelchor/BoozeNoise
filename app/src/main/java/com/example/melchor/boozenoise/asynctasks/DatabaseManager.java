@@ -26,9 +26,11 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
 
     private DatabaseReference databaseReference;
     private String databaseAction;
+    private OnBarStored listener;
 
-    public DatabaseManager(String databaseAction) {
+    public DatabaseManager(String databaseAction, OnBarStored listener) {
         this.databaseAction = databaseAction;
+        this.listener = listener;
     }
 
     @Override
@@ -68,7 +70,8 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
                     b.setDecibels((long) Double.parseDouble(String.valueOf(hashMapBar.get("decibels"))));
                     resultsFromWebservice.add(b);
                 }
-                Data.setListBars(resultsFromWebservice);
+                Data.setCurrentListBars(resultsFromWebservice);
+                listener.onBarStored();
             }
 
             @Override
@@ -91,9 +94,9 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
         return null;
     }
 
-    /**************************************/
-    /**             FUNCTIONS            **/
-    /**************************************/
+    //==============================================================================================
+    // Utils functions implementations
+    //==============================================================================================
 
     /**
      * put all bars in listBars#getResultsFromWebService in the DB
@@ -133,5 +136,13 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
         Map<String, Object> update = new HashMap<>();
         update.put("decibels", decibel);
         databaseReference.child(bar.getPlace_id()).updateChildren(update);
+    }
+
+    //==============================================================================================
+    // Callback Interface
+    //==============================================================================================
+
+    public interface OnBarStored {
+        void onBarStored();
     }
 }

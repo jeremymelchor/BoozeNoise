@@ -71,9 +71,9 @@ public class SoundRecorder extends AsyncTask<Void, Double, Double> {
         if (listener != null) listener.onSoundRecorded();
     }
 
-    /**************************************/
-    /**             FUNCTIONS            **/
-    /**************************************/
+    //==============================================================================================
+    // Utils functions implementation
+    //==============================================================================================
 
     /**
      * Functionality that gets the sound level out of the sample
@@ -101,6 +101,10 @@ public class SoundRecorder extends AsyncTask<Void, Double, Double> {
 
         return lastLevel;
     }
+
+    //==============================================================================================
+    // Callback Interface
+    //==============================================================================================
 
     public interface OnSoundRecordedListener {
         void onSoundRecorded();

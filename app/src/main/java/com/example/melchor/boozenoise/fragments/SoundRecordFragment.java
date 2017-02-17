@@ -7,25 +7,18 @@ import android.support.v4.app.ActivityCompat;
 import android.support.v4.app.Fragment;
 import android.support.v4.content.ContextCompat;
 import android.support.v7.app.AlertDialog;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewPropertyAnimator;
-import android.view.animation.AlphaAnimation;
-import android.view.animation.Animation;
-import android.view.animation.TranslateAnimation;
 import android.widget.AdapterView;
 import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.example.melchor.boozenoise.Data;
 import com.example.melchor.boozenoise.HttpRequest;
 import com.example.melchor.boozenoise.R;
 import com.example.melchor.boozenoise.activities.MainActivity;
-import com.example.melchor.boozenoise.asynctasks.GetCurrentBar;
 import com.example.melchor.boozenoise.entities.Bar;
 import com.example.melchor.boozenoise.asynctasks.DatabaseManager;
 import com.example.melchor.boozenoise.asynctasks.SoundRecorder;
@@ -97,21 +90,9 @@ public class SoundRecordFragment extends Fragment implements
         }
     }
 
-    /**************************************/
-    /**         LISTVIEW EVENTS          **/
-    /**************************************/
-
-    @Override
-    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
-        for (Bar bar : listBars.getResultsFromWebservice()) {
-            if (bar.getName() == adapterView.getAdapter().getItem(i))
-                myBar = bar;
-        }
-    }
-
-    /**************************************/
-    /**          BUTTONS EVENTS          **/
-    /**************************************/
+    //==============================================================================================
+    // Listeners implementation
+    //==============================================================================================
 
     @Override
     public void onClick(View view) {
@@ -120,7 +101,7 @@ public class SoundRecordFragment extends Fragment implements
                 new HttpRequest(getContext(), this).getBarsAroundMe(50);
                 break;
             case R.id.sound_record_send_data:
-                DatabaseManager databaseManager = new DatabaseManager("update");
+                DatabaseManager databaseManager = new DatabaseManager("update",null);
                 databaseManager.execute(myBar, Double.parseDouble(progress.getText().toString()));
                 sendRecord.setVisibility(View.INVISIBLE);
                 progress.setText("0");
@@ -128,10 +109,20 @@ public class SoundRecordFragment extends Fragment implements
         }
     }
 
-    //==============================================================================================
-    // Listeners implementation
-    //==============================================================================================
+    /**
+     * When we click on a bar in the list, we get the entity by his name
+     */
+    @Override
+    public void onItemClick(AdapterView<?> adapterView, View view, int i, long l) {
+        for (Bar bar : listBars.getResultsFromWebservice()) {
+            if (bar.getName() == adapterView.getAdapter().getItem(i))
+                myBar = bar;
+        }
+    }
 
+    /**
+     * Event fired when the asynctask SoundRecorder has recorded the ambiant sound
+     */
     @Override
     public void onSoundRecorded() {
         ArrayList<String> listDisplayed = new ArrayList<>();
@@ -145,6 +136,12 @@ public class SoundRecordFragment extends Fragment implements
         sendRecord.setVisibility(View.VISIBLE);
     }
 
+    /**
+     * Event fired when we receive the (close) bars fetched from the webservice
+     * with a radius distance of 50 meters
+     * @param response from the webservice
+     * @throws JSONException
+     */
     @Override
     public void onBarsAroundMeFetched(JSONArray response) throws JSONException {
         Gson gson = new GsonBuilder().create();

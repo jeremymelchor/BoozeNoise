@@ -4,10 +4,7 @@ import android.content.res.Resources;
 import android.util.DisplayMetrics;
 
 import com.example.melchor.boozenoise.entities.Bar;
-import com.example.melchor.boozenoise.entities.ListBars;
 
-import java.net.MalformedURLException;
-import java.net.URL;
 import java.util.ArrayList;
 
 public class Data {
@@ -20,7 +17,7 @@ public class Data {
     private static double latitude, longitude;
     private static int radiusInMeters = 1000;
     private static boolean openNow = false;
-    private static ArrayList<Bar> listBars;
+    private static ArrayList<Bar> currentListBars;
 
     public Data() {
         super();
@@ -74,12 +71,12 @@ public class Data {
         Data.openNow = openNow;
     }
 
-    public static ArrayList<Bar> getListBars() {
-        return listBars;
+    public static ArrayList<Bar> getCurrentListBars() {
+        return currentListBars;
     }
 
-    public static void setListBars(ArrayList<Bar> listBars) {
-        Data.listBars = listBars;
+    public static void setCurrentListBars(ArrayList<Bar> currentListBars) {
+        Data.currentListBars = currentListBars;
     }
 
     //==============================================================================================
