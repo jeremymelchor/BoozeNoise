@@ -8,6 +8,6 @@ Lancez l'application. Si vous ne possédez pas de compte cliquez sur "Not Regist
 Une fois enregistré, vous etes automatiquement connecté à l'application.
 Vous vous retrouvez sur l'affichage principal, qui vous montre la carte et votre localisation.
 
-![alt text](https://github.com/patchimou/BoozeNoise/blob/master/screen1.png"Logo Title Text 1")
+![alt text](https://github.com/patchimou/BoozeNoise/blob/master/screen1.png)
 
 
