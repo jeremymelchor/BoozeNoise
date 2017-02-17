@@ -8,6 +8,7 @@ import com.example.melchor.boozenoise.entities.Bar;
 import com.example.melchor.boozenoise.entities.Geometry;
 import com.example.melchor.boozenoise.entities.ListBars;
 import com.example.melchor.boozenoise.entities.Location;
+import com.example.melchor.boozenoise.fragments.SoundRecordFragment;
 import com.google.firebase.database.DataSnapshot;
 import com.google.firebase.database.DatabaseError;
 import com.google.firebase.database.DatabaseReference;
@@ -32,6 +33,8 @@ public class DatabaseManager extends AsyncTask<Object, Void, Void> {
         this.databaseAction = databaseAction;
         this.listener = listener;
     }
+
+
 
     @Override
     protected void onPreExecute() {

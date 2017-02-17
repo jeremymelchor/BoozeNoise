@@ -35,7 +35,8 @@ public class SoundRecordFragment extends Fragment implements
         AdapterView.OnItemClickListener,
         View.OnClickListener,
         SoundRecorder.OnSoundRecordedListener,
-        HttpRequest.HttpRequestListener {
+        HttpRequest.HttpRequestListener,
+        DatabaseManager.OnBarStored {
 
     private static final String TAG = MainActivity.class.getSimpleName();
 
@@ -101,7 +102,7 @@ public class SoundRecordFragment extends Fragment implements
                 new HttpRequest(getContext(), this).getBarsAroundMe(50);
                 break;
             case R.id.sound_record_send_data:
-                DatabaseManager databaseManager = new DatabaseManager("update",null);
+                DatabaseManager databaseManager = new DatabaseManager("update",this);
                 databaseManager.execute(myBar, Double.parseDouble(progress.getText().toString()));
                 sendRecord.setVisibility(View.INVISIBLE);
                 progress.setText("0");
@@ -162,5 +163,10 @@ public class SoundRecordFragment extends Fragment implements
             new SoundRecorder(this, progress).execute();
             barsFetched = listBars;
         }
+    }
+
+    @Override
+    public void onBarStored() {
+        //DO NOTHING
     }
 }
